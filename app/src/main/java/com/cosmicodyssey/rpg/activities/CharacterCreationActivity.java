@@ -1,32 +1,30 @@
 package com.cosmicodyssey.rpg.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import com.bumptech.glide.Glide;
 import com.cosmicodyssey.rpg.R;
 import com.cosmicodyssey.rpg.ai.GameMasterAI;
 import com.cosmicodyssey.rpg.data.DataManager;
 import com.cosmicodyssey.rpg.models.Character;
-import com.cosmicodyssey.rpg.models.CharacterStats;
-
-import java.io.File;
+import com.cosmicodyssey.rpg.models.CharacterClass;
+import com.cosmicodyssey.rpg.models.Race;
 
 public class CharacterCreationActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
@@ -62,6 +60,8 @@ public class CharacterCreationActivity extends AppCompatActivity {
     private DataManager dataManager;
     private String customAvatarPath = null;
     private String aiAvatarUrl = null;
+    private Race selectedRace = Race.getTerrien();
+    private CharacterClass selectedClass = CharacterClass.getMelee();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,147 +106,182 @@ public class CharacterCreationActivity extends AppCompatActivity {
     }
 
     private void setupSpinners() {
-        String[] races = {"Humain", "Xylarien", "Néo-Machine", "Vorak", "Etherean", "Draconien"};
-        String[] classes = {"Pilote", "Psionique", "Ingénieur", "Mercenaire", "Explorateur", "Marchand"};
-        String[] backgrounds = {"Vétéran de guerre", "Scientifique", "Criminel", "Noble", "Réfugié", "Archéologue"};
+        Race[] races = Race.getAllRaces();
+        String[] raceNames = new String[races.length];
+        for (int i = 0; i < races.length; i++) {
+            raceNames[i] = races[i].getName();
+        }
+        ArrayAdapter<String> raceAdapter = new ArrayAdapter<>(this, 
+            android.R.layout.simple_spinner_item, raceNames);
+        raceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        raceSpinner.setAdapter(raceAdapter);
+        
+        raceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedRace = races[position];
+                applyRaceStats();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
-        raceSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, races));
-        classSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, classes));
-        backgroundSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, backgrounds));
+        CharacterClass[] classes = CharacterClass.getAllClasses();
+        String[] classNames = new String[classes.length];
+        for (int i = 0; i < classes.length; i++) {
+            classNames[i] = classes[i].getName();
+        }
+        ArrayAdapter<String> classAdapter = new ArrayAdapter<>(this, 
+            android.R.layout.simple_spinner_item, classNames);
+        classAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        classSpinner.setAdapter(classAdapter);
+        
+        classSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedClass = classes[position];
+                showClassSkills(selectedClass);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        String[] backgrounds = {"Réfugié", "Mercenaire", "Scientifique", "Pirate", "Noble", "Marchand"};
+        ArrayAdapter<String> backgroundAdapter = new ArrayAdapter<>(this, 
+            android.R.layout.simple_spinner_item, backgrounds);
+        backgroundAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        backgroundSpinner.setAdapter(backgroundAdapter);
+    }
+
+    private void applyRaceStats() {
+        strengthBar.setProgress(selectedRace.getBaseSTR());
+        dexterityBar.setProgress(selectedRace.getBaseDEX());
+        constitutionBar.setProgress(selectedRace.getBaseCON());
+        intelligenceBar.setProgress(selectedRace.getBaseINT());
+        wisdomBar.setProgress(selectedRace.getBaseSAG());
+        charismaBar.setProgress(selectedRace.getBaseCHA());
+        luckBar.setProgress(selectedRace.getBaseLUCK());
+        
+        strengthBar.setMax(selectedRace.getMaxSTR());
+        dexterityBar.setMax(selectedRace.getMaxDEX());
+        constitutionBar.setMax(selectedRace.getMaxCON());
+        intelligenceBar.setMax(selectedRace.getMaxINT());
+        wisdomBar.setMax(selectedRace.getMaxSAG());
+        charismaBar.setMax(selectedRace.getMaxCHA());
+        luckBar.setMax(selectedRace.getMaxLUCK());
+        
+        updateStatDisplays();
     }
 
     private void setupSeekBars() {
-        setupStatBar(strengthBar, strengthValue, "FOR");
-        setupStatBar(dexterityBar, dexterityValue, "DEX");
-        setupStatBar(constitutionBar, constitutionValue, "CON");
-        setupStatBar(intelligenceBar, intelligenceValue, "INT");
-        setupStatBar(wisdomBar, wisdomValue, "SAG");
-        setupStatBar(charismaBar, charismaValue, "CHA");
-        setupStatBar(luckBar, luckValue, "LUCK");
+        setupStatBar(strengthBar, strengthValue, "FOR", selectedRace.getMaxSTR());
+        setupStatBar(dexterityBar, dexterityValue, "DEX", selectedRace.getMaxDEX());
+        setupStatBar(constitutionBar, constitutionValue, "CON", selectedRace.getMaxCON());
+        setupStatBar(intelligenceBar, intelligenceValue, "INT", selectedRace.getMaxINT());
+        setupStatBar(wisdomBar, wisdomValue, "SAG", selectedRace.getMaxSAG());
+        setupStatBar(charismaBar, charismaValue, "CHA", selectedRace.getMaxCHA());
+        setupStatBar(luckBar, luckValue, "LUCK", selectedRace.getMaxLUCK());
     }
 
-    private void setupStatBar(SeekBar bar, TextView valueText, String statName) {
-        bar.setMax(20);
-        bar.setProgress(10);
-        valueText.setText(statName + ": 10");
+    private void setupStatBar(SeekBar bar, TextView valueText, String statName, int max) {
+        bar.setMax(max);
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 valueText.setText(statName + ": " + progress);
             }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+    }
+
+    private void updateStatDisplays() {
+        strengthValue.setText("FOR: " + strengthBar.getProgress());
+        dexterityValue.setText("DEX: " + dexterityBar.getProgress());
+        constitutionValue.setText("CON: " + constitutionBar.getProgress());
+        intelligenceValue.setText("INT: " + intelligenceBar.getProgress());
+        wisdomValue.setText("SAG: " + wisdomBar.getProgress());
+        charismaValue.setText("CHA: " + charismaBar.getProgress());
+        luckValue.setText("LUCK: " + luckBar.getProgress());
+    }
+
+    private void showClassSkills(CharacterClass cls) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Compétences de ").append(cls.getName()).append(" :\n\n");
+        for (CharacterClass.Skill skill : cls.getSkillTree()) {
+            sb.append(skill.getLevel()).append(" - ").append(skill.getName())
+              .append("\n").append(skill.getEffect()).append("\n\n");
+        }
+        
+        new AlertDialog.Builder(this)
+            .setTitle("Arbre de compétences")
+            .setMessage(sb.toString())
+            .setPositiveButton("OK", null)
+            .show();
     }
 
     private void setupButtons() {
-        generateAvatarBtn.setOnClickListener(v -> generateAIAvatar());
-        uploadAvatarBtn.setOnClickListener(v -> pickImageFromGallery());
+        generateAvatarBtn.setOnClickListener(v -> generateAvatar());
+        uploadAvatarBtn.setOnClickListener(v -> uploadAvatar());
         takePhotoBtn.setOnClickListener(v -> takePhoto());
-
-        avatarTypeGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.radioAI) {
-                generateAvatarBtn.setEnabled(true);
-            } else {
-                generateAvatarBtn.setEnabled(false);
-            }
-        });
-
         createBtn.setOnClickListener(v -> createCharacter());
     }
 
-    private void generateAIAvatar() {
-        character.setName(nameInput.getText().toString());
-        character.setRace(raceSpinner.getSelectedItem().toString());
-        character.setClassName(classSpinner.getSelectedItem().toString());
-
-        aiAvatarUrl = ai.generateCharacterImageUrl(character);
-        character.setAvatarUrl(aiAvatarUrl);
-        character.setAvatarType("ai");
-
-        Glide.with(this)
-                .load(aiAvatarUrl)
-                .placeholder(R.drawable.ic_character_placeholder)
-                .into(avatarImage);
-
-        Toast.makeText(this, "Avatar IA généré !", Toast.LENGTH_SHORT).show();
+    private void generateAvatar() {
+        String prompt = nameInput.getText().toString() + " " + 
+                       selectedRace.getName() + " " + selectedClass.getName();
+        String imageUrl = "https://image.pollinations.ai/prompt/" + prompt + "?width=512&height=512";
+        Glide.with(this).load(imageUrl).into(avatarImage);
+        aiAvatarUrl = imageUrl;
     }
 
-    private void pickImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    private void uploadAvatar() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
         startActivityForResult(intent, PICK_IMAGE);
     }
 
     private void takePhoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File photoFile = new File(getFilesDir(), "avatar_" + System.currentTimeMillis() + ".jpg");
-        Uri photoUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", photoFile);
-        customAvatarPath = photoFile.getAbsolutePath();
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
         startActivityForResult(intent, TAKE_PHOTO);
+    }
+
+    private void createCharacter() {
+        String name = nameInput.getText().toString();
+        if (name.isEmpty()) {
+            Toast.makeText(this, "Veuillez entrer un nom", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        character.setName(name);
+        character.setRace(selectedRace.getName());
+        character.setClassName(selectedClass.getName());
+        character.setBackground(backgroundSpinner.getSelectedItem().toString());
+        
+        if (aiAvatarUrl != null) {
+            character.setAvatarUrl(aiAvatarUrl);
+        }
+
+        dataManager.saveCharacter(character);
+        
+        Toast.makeText(this, "Personnage créé avec succès !", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PICK_IMAGE && data != null) {
-                Uri selectedImage = data.getData();
-                customAvatarPath = selectedImage.toString();
-                character.setAvatarUrl(customAvatarPath);
-                character.setAvatarType("custom");
-                Glide.with(this).load(selectedImage).into(avatarImage);
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == PICK_IMAGE) {
+                Uri uri = data.getData();
+                avatarImage.setImageURI(uri);
+                customAvatarPath = uri.getPath();
             } else if (requestCode == TAKE_PHOTO) {
-                character.setAvatarUrl(customAvatarPath);
-                character.setAvatarType("custom");
-                Glide.with(this).load(customAvatarPath).into(avatarImage);
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                avatarImage.setImageBitmap(photo);
             }
         }
-    }
-
-    private void createCharacter() {
-        String name = nameInput.getText().toString().trim();
-        if (name.isEmpty()) {
-            Toast.makeText(this, "Entre un nom !", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (character.getAvatarUrl() == null) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Pas d'avatar")
-                    .setMessage("Générer un avatar IA automatiquement ?")
-                    .setPositiveButton("Oui", (dialog, which) -> {
-                        generateAIAvatar();
-                        saveAndContinue(name);
-                    })
-                    .setNegativeButton("Non", null)
-                    .show();
-            return;
-        }
-
-        saveAndContinue(name);
-    }
-
-    private void saveAndContinue(String name) {
-        character.setName(name);
-        character.setRace(raceSpinner.getSelectedItem().toString());
-        character.setClassName(classSpinner.getSelectedItem().toString());
-        character.setBackground(backgroundSpinner.getSelectedItem().toString());
-
-        CharacterStats stats = new CharacterStats();
-        stats.setStrength(strengthBar.getProgress());
-        stats.setDexterity(dexterityBar.getProgress());
-        stats.setConstitution(constitutionBar.getProgress());
-        stats.setIntelligence(intelligenceBar.getProgress());
-        stats.setWisdom(wisdomBar.getProgress());
-        stats.setCharisma(charismaBar.getProgress());
-        stats.setLuck(luckBar.getProgress());
-        character.setStats(stats);
-
-        dataManager.saveCharacter(character);
-
-        Intent intent = new Intent(this, GameSessionActivity.class);
-        intent.putExtra("character_id", character.getId());
-        startActivity(intent);
-        finish();
     }
 }
