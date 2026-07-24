@@ -1,4 +1,4 @@
-com.cosmicodyssey.rpg:xml/file_paths = 0x7f120000
+com.cosmicodyssey.rpg:xml/file_paths = 0x7f120001
 com.cosmicodyssey.rpg:styleable/include = 0x7f1100ad
 com.cosmicodyssey.rpg:styleable/ViewPager2 = 0x7f1100aa
 com.cosmicodyssey.rpg:styleable/ViewBackgroundHelper = 0x7f1100a9
@@ -379,6 +379,7 @@ com.cosmicodyssey.rpg:style/Widget.MaterialComponents.Button.TextButton.Snackbar
 com.cosmicodyssey.rpg:style/TextAppearance.AppCompat.Headline = 0x7f1001c1
 com.cosmicodyssey.rpg:style/TextAppearance.AppCompat.Display2 = 0x7f1001be
 com.cosmicodyssey.rpg:style/TextAppearance.AppCompat.Display1 = 0x7f1001bd
+com.cosmicodyssey.rpg:xml/backup_rules = 0x7f120000
 com.cosmicodyssey.rpg:style/TextAppearance.AppCompat.Caption = 0x7f1001bc
 com.cosmicodyssey.rpg:style/TextAppearance.AppCompat = 0x7f1001b8
 com.cosmicodyssey.rpg:style/ShapeAppearanceOverlay.MaterialComponents.MaterialCalendar.Window.Fullscreen = 0x7f1001b5

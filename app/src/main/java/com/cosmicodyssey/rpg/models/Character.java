@@ -156,4 +156,36 @@ public class Character {
         if (spaceship != null) sb.append("Vaisseau: ").append(spaceship.getName()).append(", ");
         return sb.toString();
     }
+
+    public String generateImagePrompt() {
+        String armorName = "";
+        String weaponName = "";
+        
+        for (Equipment e : equipments) {
+            if ("armor".equals(e.getType())) {
+                armorName = e.getName();
+            } else if ("weapon".equals(e.getType())) {
+                weaponName = e.getName();
+            }
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("A space warrior");
+        
+        if (!armorName.isEmpty()) {
+            sb.append(" wearing ").append(armorName);
+        }
+        
+        if (!weaponName.isEmpty()) {
+            sb.append(", holding ").append(weaponName);
+        }
+        
+        if (mount != null) {
+            sb.append(", riding ").append(mount.getName());
+        }
+        
+        sb.append(" in a sci-fi galaxy, dynamic pose, neon lights");
+        
+        return sb.toString();
+    }
 }

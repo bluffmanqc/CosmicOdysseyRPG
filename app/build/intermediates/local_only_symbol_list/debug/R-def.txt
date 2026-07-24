@@ -271,4 +271,5 @@ style GrimoireText
 style GrimoireTitle
 style Theme.CosmicOdyssey
 style Theme.CosmicOdyssey.Splash
+xml backup_rules
 xml file_paths

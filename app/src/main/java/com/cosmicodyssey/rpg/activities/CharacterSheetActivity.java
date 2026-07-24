@@ -15,6 +15,7 @@ import com.cosmicodyssey.rpg.ai.GameMasterAI;
 import com.cosmicodyssey.rpg.data.DataManager;
 import com.cosmicodyssey.rpg.models.Character;
 import com.cosmicodyssey.rpg.models.Equipment;
+import java.net.URLEncoder;
 
 public class CharacterSheetActivity extends AppCompatActivity {
 
@@ -184,5 +185,31 @@ public class CharacterSheetActivity extends AppCompatActivity {
                 rarityView = itemView.findViewById(R.id.rarityIndicator);
             }
         }
+    }
+
+    
+    private void updateCharacterImage() {
+        String prompt = character.generateImagePrompt();
+        String encodedPrompt;
+        try {
+            encodedPrompt = URLEncoder.encode(prompt, "UTF-8");
+        } catch (Exception e) {
+            encodedPrompt = prompt;
+        }
+        
+        String imageUrl = "https://image.pollinations.ai/prompt/" + encodedPrompt + "?width=512&height=512&nologo=true";
+        
+        // Afficher l'image
+        Glide.with(this).load(imageUrl).into(avatarImage);
+    }
+    
+
+    private void onItemAdded() {
+        updateCharacterImage();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCharacterImage();
     }
 }
