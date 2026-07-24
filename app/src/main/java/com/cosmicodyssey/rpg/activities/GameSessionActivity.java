@@ -1,8 +1,9 @@
 package com.cosmicodyssey.rpg.activities;
+import android.widget.ProgressBar;
+import android.speech.tts.TextToSpeech;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -37,7 +38,11 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class GameSessionActivity extends AppCompatActivity {
+    private static final String PREFS_MESSAGES = "cosmic_messages";
+    private static final String KEY_MESSAGE_LIST = "message_list";
     private RecyclerView messageList;
+    private ProgressBar loadingProgress;
+    private TextToSpeech tts;
     private EditText inputText;
     private ImageButton sendBtn;
     private ImageButton voiceBtn;
@@ -328,11 +333,14 @@ public class GameSessionActivity extends AppCompatActivity {
         public int getItemCount() { return msgs.size(); }
 
         class ViewHolder extends RecyclerView.ViewHolder {
+            ImageButton playVoiceBtn;
             TextView senderText, contentText;
             ViewHolder(View itemView) {
-                super(itemView);
+            super(itemView);
+            playVoiceBtn = itemView.findViewById(R.id.playVoiceBtn);
+            senderText = itemView.findViewById(R.id.senderText);
+            contentText = itemView.findViewById(R.id.contentText);
                 senderText = itemView.findViewById(R.id.senderText);
-                playVoiceBtn = itemView.findViewById(R.id.playVoiceBtn);
                 contentText = itemView.findViewById(R.id.contentText);
             }
         }
