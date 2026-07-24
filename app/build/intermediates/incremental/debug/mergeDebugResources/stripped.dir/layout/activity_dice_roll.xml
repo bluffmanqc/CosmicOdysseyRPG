@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0a0a1a">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎲 Lancer de Dés"
+        android:textColor="#00ff88"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:id="@+id/diceContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp" />
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/addDiceBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="➕ Ajouter"
+            android:backgroundTint="#2196f3"
+            android:textColor="#ffffff"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/clearBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="🗑️ Vider"
+            android:backgroundTint="#ff4444"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/resultText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Appuie sur LANCER"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:minHeight="80dp" />
+
+    <TextView
+        android:id="@+id/totalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#00ff88"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/rollBtn"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_margin="16dp"
+        android:text="🎲 LANCER LES DÉS"
+        android:textSize="20sp"
+        android:backgroundTint="#00ff88"
+        android:textColor="#0a0a1a"
+        android:textStyle="bold" />
+</LinearLayout>

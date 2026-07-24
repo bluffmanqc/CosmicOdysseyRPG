@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CosmicOdyssey" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/cosmic_green</item>
+        <item name="colorPrimaryDark">@color/cosmic_green_dark</item>
+        <item name="colorAccent">@color/cosmic_pink</item>
+        <item name="android:windowBackground">@color/cosmic_black</item>
+        <item name="android:textColorPrimary">@color/cosmic_text</item>
+        <item name="android:textColorSecondary">@color/cosmic_text_secondary</item>
+        <item name="android:colorBackground">@color/cosmic_black</item>
+    </style>
+
+    <style name="Theme.CosmicOdyssey.Splash">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
+    <style name="GrimoirePage">
+        <item name="android:background">@color/cosmic_dark</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="GrimoireTitle">
+        <item name="android:textColor">@color/cosmic_gold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="GrimoireText">
+        <item name="android:textColor">#d4c4a8</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
+    </style>
+
+    <style name="CosmicButton" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/cosmic_green</item>
+        <item name="android:textColor">@color/cosmic_black</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <style name="CosmicCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/cosmic_dark</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+</resources>

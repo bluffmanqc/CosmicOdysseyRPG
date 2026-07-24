@@ -1,0 +1,3 @@
+-keep public class * { public *; }
+-keep class com.cosmicodyssey.rpg.models.** { *; }
+-keep class com.cosmicodyssey.rpg.data.** { *; }

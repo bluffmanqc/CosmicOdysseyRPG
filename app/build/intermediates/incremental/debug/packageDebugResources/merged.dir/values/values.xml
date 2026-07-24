@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="common_gray">#9e9e9e</color>
+    <color name="cosmic_black">#0a0a1a</color>
+    <color name="cosmic_blue">#00e5ff</color>
+    <color name="cosmic_cyan">#00e5ff</color>
+    <color name="cosmic_dark">#1a1a2e</color>
+    <color name="cosmic_gold">#ffd700</color>
+    <color name="cosmic_green">#00ff88</color>
+    <color name="cosmic_green_dark">#00cc6a</color>
+    <color name="cosmic_orange">#ff9800</color>
+    <color name="cosmic_pink">#ff00ff</color>
+    <color name="cosmic_purple">#9c27b0</color>
+    <color name="cosmic_red">#ff1744</color>
+    <color name="cosmic_text">#ffffff</color>
+    <color name="cosmic_text_lore">#8b7355</color>
+    <color name="cosmic_text_secondary">#b0b0b0</color>
+    <color name="epic_purple">#9c27b0</color>
+    <color name="legendary_orange">#ff9800</color>
+    <color name="mythic_red">#ff1744</color>
+    <color name="rare_blue">#2196f3</color>
+    <color name="uncommon_green">#4caf50</color>
+    <string name="add_dice">Ajouter dé</string>
+    <string name="api_key">Clé API OpenRouter</string>
+    <string name="app_name">Cosmic Odyssey RPG</string>
+    <string name="background">Background</string>
+    <string name="buy">Acheter</string>
+    <string name="catalog">Catalogues</string>
+    <string name="character_name">Nom du personnage</string>
+    <string name="charisma">Charisme</string>
+    <string name="class_name">Classe</string>
+    <string name="clear_dice">Retirer tous</string>
+    <string name="constitution">Constitution</string>
+    <string name="continue_game">Continuer</string>
+    <string name="create_character">Créer Personnage</string>
+    <string name="create_party">Créer Partie</string>
+    <string name="credits">Crédits</string>
+    <string name="dexterity">Dextérité</string>
+    <string name="generate_avatar">Générer Avatar IA</string>
+    <string name="intelligence">Intelligence</string>
+    <string name="join">Rejoindre</string>
+    <string name="join_party">Rejoindre Partie</string>
+    <string name="luck">Chance</string>
+    <string name="new_game">Nouvelle Partie</string>
+    <string name="next_page">→</string>
+    <string name="party_code">Code Partie</string>
+    <string name="prev_page">←</string>
+    <string name="race">Race</string>
+    <string name="refresh">Rafraîchir</string>
+    <string name="roll_dice">Lancer les dés</string>
+    <string name="save">Sauvegarder</string>
+    <string name="scan">Scanner</string>
+    <string name="settings">Paramètres</string>
+    <string name="strength">Force</string>
+    <string name="subtitle_splash">RPG Intergalactique</string>
+    <string name="take_photo">Prendre Photo</string>
+    <string name="test_api">Tester API</string>
+    <string name="title_splash">COSMIC ODYSSEY</string>
+    <string name="travel">Voyager</string>
+    <string name="tts_enabled">Voix activée</string>
+    <string name="tts_pitch">Hauteur voix</string>
+    <string name="tts_speed">Vitesse voix</string>
+    <string name="upload_avatar">Uploader Photo</string>
+    <string name="wisdom">Sagesse</string>
+    <style name="CosmicButton" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/cosmic_green</item>
+        <item name="android:textColor">@color/cosmic_black</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+    <style name="CosmicCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/cosmic_dark</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+    <style name="GrimoirePage">
+        <item name="android:background">@color/cosmic_dark</item>
+        <item name="android:padding">16dp</item>
+    </style>
+    <style name="GrimoireText">
+        <item name="android:textColor">#d4c4a8</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
+    </style>
+    <style name="GrimoireTitle">
+        <item name="android:textColor">@color/cosmic_gold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">serif</item>
+    </style>
+    <style name="Theme.CosmicOdyssey" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/cosmic_green</item>
+        <item name="colorPrimaryDark">@color/cosmic_green_dark</item>
+        <item name="colorAccent">@color/cosmic_pink</item>
+        <item name="android:windowBackground">@color/cosmic_black</item>
+        <item name="android:textColorPrimary">@color/cosmic_text</item>
+        <item name="android:textColorSecondary">@color/cosmic_text_secondary</item>
+        <item name="android:colorBackground">@color/cosmic_black</item>
+    </style>
+    <style name="Theme.CosmicOdyssey.Splash">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+</resources>

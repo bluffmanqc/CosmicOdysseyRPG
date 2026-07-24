@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0a0a1a">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:alpha="0.3"
+        android:src="@drawable/bg_cosmic" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="COSMIC ODYSSEY"
+            android:textColor="#00ff88"
+            android:textSize="42sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            android:shadowColor="#00ff88"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="20" />
+
+        <TextView
+            android:id="@+id/subtitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="RPG Intergalactique"
+            android:textColor="#b0b0b0"
+            android:textSize="18sp"
+            android:letterSpacing="0.3" />
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="48dp"
+            android:indeterminateTint="#00ff88" />
+
+    </LinearLayout>
+</FrameLayout>

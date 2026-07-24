@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="#1a1a2e">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="140dp">
+
+            <ImageView
+                android:id="@+id/itemImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="#0f0f23" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_rarity_overlay" />
+
+            <TextView
+                android:id="@+id/rarityText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_margin="6dp"
+                android:background="@drawable/bg_rarity_badge"
+                android:paddingHorizontal="10dp" android:paddingVertical="3dp"
+                android:text="Commun"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#ffffff" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/nameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nom"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/sellerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vendeur"
+                android:textColor="#b0b0b0"
+                android:textSize="11sp"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/priceText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100 💰"
+                android:textColor="#ffd700"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+
+            <Button
+                android:id="@+id/actionBtn"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginTop="6dp"
+                android:text="💰 Acheter"
+                android:textSize="12sp"
+                android:backgroundTint="#00ff88"
+                android:textColor="#0a0a1a"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

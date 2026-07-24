@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cosmic Odyssey RPG</string>
+    <string name="title_splash">COSMIC ODYSSEY</string>
+    <string name="subtitle_splash">RPG Intergalactique</string>
+    <string name="new_game">Nouvelle Partie</string>
+    <string name="continue_game">Continuer</string>
+    <string name="join_party">Rejoindre Partie</string>
+    <string name="catalog">Catalogues</string>
+    <string name="settings">Paramètres</string>
+    <string name="character_name">Nom du personnage</string>
+    <string name="race">Race</string>
+    <string name="class_name">Classe</string>
+    <string name="background">Background</string>
+    <string name="generate_avatar">Générer Avatar IA</string>
+    <string name="upload_avatar">Uploader Photo</string>
+    <string name="take_photo">Prendre Photo</string>
+    <string name="create_character">Créer Personnage</string>
+    <string name="strength">Force</string>
+    <string name="dexterity">Dextérité</string>
+    <string name="constitution">Constitution</string>
+    <string name="intelligence">Intelligence</string>
+    <string name="wisdom">Sagesse</string>
+    <string name="charisma">Charisme</string>
+    <string name="luck">Chance</string>
+    <string name="api_key">Clé API OpenRouter</string>
+    <string name="save">Sauvegarder</string>
+    <string name="test_api">Tester API</string>
+    <string name="tts_enabled">Voix activée</string>
+    <string name="tts_speed">Vitesse voix</string>
+    <string name="tts_pitch">Hauteur voix</string>
+    <string name="roll_dice">Lancer les dés</string>
+    <string name="add_dice">Ajouter dé</string>
+    <string name="clear_dice">Retirer tous</string>
+    <string name="travel">Voyager</string>
+    <string name="scan">Scanner</string>
+    <string name="buy">Acheter</string>
+    <string name="refresh">Rafraîchir</string>
+    <string name="credits">Crédits</string>
+    <string name="create_party">Créer Partie</string>
+    <string name="join">Rejoindre</string>
+    <string name="party_code">Code Partie</string>
+    <string name="prev_page">←</string>
+    <string name="next_page">→</string>
+</resources>
