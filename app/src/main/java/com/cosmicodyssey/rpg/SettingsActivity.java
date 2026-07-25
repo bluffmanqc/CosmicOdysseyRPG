@@ -250,12 +250,7 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putString(KEY_ELEVENLABS, elevenlabsInput.getText().toString().trim());
         editor.putString(KEY_ELEVENLABS_VOICE, selectedVoiceId);
         editor.putBoolean(KEY_TTS_FALLBACK, ttsFallbackSwitch.isChecked());
-        boolean saved = editor.commit();
-        if (saved) {
-            Toast.makeText(this, "Paramètres sauvegardés !", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Erreur de sauvegarde", Toast.LENGTH_SHORT).show();
-        }
+        editor.apply();
         
         Toast.makeText(this, "Paramètres sauvegardés !", Toast.LENGTH_SHORT).show();
         finish();

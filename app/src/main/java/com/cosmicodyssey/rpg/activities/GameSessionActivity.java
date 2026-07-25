@@ -1,9 +1,8 @@
 package com.cosmicodyssey.rpg.activities;
-import android.widget.ProgressBar;
-import android.speech.tts.TextToSpeech;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -31,18 +30,10 @@ import com.cosmicodyssey.rpg.models.Party;
 import com.cosmicodyssey.rpg.models.Planet;
 
 import java.util.ArrayList;
-import android.content.SharedPreferences;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.util.List;
 
 public class GameSessionActivity extends AppCompatActivity {
-    private static final String PREFS_MESSAGES = "cosmic_messages";
-    private static final String KEY_MESSAGE_LIST = "message_list";
     private RecyclerView messageList;
-    private ProgressBar loadingProgress;
-    private TextToSpeech tts;
     private EditText inputText;
     private ImageButton sendBtn;
     private ImageButton voiceBtn;
@@ -80,11 +71,8 @@ public class GameSessionActivity extends AppCompatActivity {
         loadOrCreateParty();
         initViews();
         setupButtons();
-        loadMessages();
-        if (messages.isEmpty()) {
-            addSystemMessage("Bienvenue dans Cosmic Odyssey, " + character.getName() + " !");
+        addSystemMessage("Bienvenue dans Cosmic Odyssey, " + character.getName() + " !");
         addSystemMessage("Tu te trouves sur " + party.getCurrentPlanet() + ", dans le système " + party.getCurrentSystem());
-        }
     }
 
     private void loadOrCreateParty() {
@@ -114,7 +102,6 @@ public class GameSessionActivity extends AppCompatActivity {
         sceneImage = findViewById(R.id.sceneImage);
         choicesContainer = findViewById(R.id.choicesContainer);
         scrollView = findViewById(R.id.scrollView);
-        loadingProgress = findViewById(R.id.loadingProgress);
 
         messages = new ArrayList<>();
         messageAdapter = new MessageAdapter(messages);
@@ -143,7 +130,6 @@ public class GameSessionActivity extends AppCompatActivity {
             return;
         }
 
-        loadingProgress.setVisibility(View.VISIBLE);
         ai.generateStoryResponse(party, character, action, new GameMasterAI.AIResponseCallback() {
             @Override
             public void onSuccess(GameMasterAI.StoryResponse response) {
@@ -181,35 +167,9 @@ public class GameSessionActivity extends AppCompatActivity {
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> {
-                            loadingProgress.setVisibility(View.GONE);
-                            addSystemMessage("Erreur MJ : " + error);
-                        });
+                runOnUiThread(() -> addSystemMessage("Erreur MJ : " + error));
             }
         });
-    }
-
-    private void saveMessages() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_MESSAGES, MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = gson.toJson(messages);
-        prefs.edit().putString(KEY_MESSAGE_LIST, json).apply();
-    }
-
-    private void loadMessages() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_MESSAGES, MODE_PRIVATE);
-        String json = prefs.getString(KEY_MESSAGE_LIST, null);
-        if (json != null) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<ArrayList<GameMessage>>(){}.getType();
-            ArrayList<GameMessage> savedMessages = gson.fromJson(json, type);
-            if (savedMessages != null) {
-                messages.clear();
-                messages.addAll(savedMessages);
-                messageAdapter.notifyDataSetChanged();
-                scrollToBottom();
-            }
-        }
     }
 
     private void addPlayerMessage(String content) {
@@ -219,7 +179,6 @@ public class GameSessionActivity extends AppCompatActivity {
         msg.setSender(character.getName());
         msg.setPlayer(true);
         messages.add(msg);
-        saveMessages();
         messageAdapter.notifyItemInserted(messages.size() - 1);
         scrollToBottom();
     }
@@ -231,7 +190,6 @@ public class GameSessionActivity extends AppCompatActivity {
         msg.setSender("MJ Cosmique");
         msg.setVoiceText(voiceText);
         messages.add(msg);
-        saveMessages();
         messageAdapter.notifyItemInserted(messages.size() - 1);
 
         if (ttsEnabled && voiceText != null) {
@@ -247,7 +205,6 @@ public class GameSessionActivity extends AppCompatActivity {
         msg.setContent(content);
         msg.setSender("Système");
         messages.add(msg);
-        saveMessages();
         messageAdapter.notifyItemInserted(messages.size() - 1);
         scrollToBottom();
     }
@@ -308,17 +265,6 @@ public class GameSessionActivity extends AppCompatActivity {
             holder.senderText.setText(msg.getSender());
             holder.contentText.setText(msg.getContent());
 
-                if (msg.getVoiceText() != null && !msg.getVoiceText().isEmpty()) {
-                    holder.playVoiceBtn.setVisibility(View.VISIBLE);
-                    holder.playVoiceBtn.setOnClickListener(v -> {
-                        if (tts != null) {
-                            tts.speak(msg.getVoiceText(), TextToSpeech.QUEUE_FLUSH, null, null);
-                        }
-                    });
-                } else {
-                    holder.playVoiceBtn.setVisibility(View.GONE);
-                }
-
             if (msg.isPlayer()) {
                 holder.itemView.setBackgroundResource(R.drawable.bg_message_player);
             } else if (msg.getType() == GameMessage.Type.SYSTEM) {
@@ -333,13 +279,9 @@ public class GameSessionActivity extends AppCompatActivity {
         public int getItemCount() { return msgs.size(); }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            ImageButton playVoiceBtn;
             TextView senderText, contentText;
             ViewHolder(View itemView) {
-            super(itemView);
-            playVoiceBtn = itemView.findViewById(R.id.playVoiceBtn);
-            senderText = itemView.findViewById(R.id.senderText);
-            contentText = itemView.findViewById(R.id.contentText);
+                super(itemView);
                 senderText = itemView.findViewById(R.id.senderText);
                 contentText = itemView.findViewById(R.id.contentText);
             }

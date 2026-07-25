@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.cosmicodyssey.rpg">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -26,7 +25,7 @@
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.CosmicOdyssey.Splash">
+            android:theme="@style/Theme.CosmicOdyssey">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -56,6 +55,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+            <activity android:name=".InventoryActivity" android:theme="@style/Theme.CosmicOdyssey" />
     </application>
 
 </manifest>

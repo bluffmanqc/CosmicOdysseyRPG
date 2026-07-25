@@ -158,8 +158,9 @@ public class Character {
     }
 
     // Alias pour generateImagePrompt (compatibilité)
+
     public String generateImagePrompt() {
-        return getCharacterPrompt();
+        return name + ", " + race + " " + className + ", sci-fi RPG portrait";
     }
 
 }

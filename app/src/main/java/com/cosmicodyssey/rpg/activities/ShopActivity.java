@@ -174,7 +174,7 @@ public class ShopActivity extends AppCompatActivity {
 
             Glide.with(ShopActivity.this)
                     .load(item.getImageUrl())
-                    .placeholder(R.drawable.ic_item_placeholder)
+                    .placeholder(R.drawable.ic_item_placeholder).error(R.drawable.ic_item_placeholder)
                     .into(holder.itemImage);
 
             holder.buyBtn.setOnClickListener(v -> buyItem(item));
