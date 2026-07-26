@@ -171,7 +171,7 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /root/.grad
 	android:theme
 		ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:21:9-51
 	android:usesCleartextTraffic
-		ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:22:9-44
+		ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:22:9-45
 	android:name
 		ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:14:9-41
 activity#com.cosmicodyssey.rpg.activities.SplashActivity
@@ -265,7 +265,9 @@ ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.
 	android:name
 		ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:46:19-62
 activity#com.cosmicodyssey.rpg.InventoryActivity
-ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:58:13-102
+ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:58:13-127
+	android:exported
+		ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:58:100-124
 	android:theme
 		ADDED from /root/CosmicOdysseyRPG/CosmicOdysseyRPG/app/src/main/AndroidManifest.xml:58:57-99
 	android:name

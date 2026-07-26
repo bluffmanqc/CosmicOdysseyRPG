@@ -187,10 +187,7 @@ public class GameMasterAI {
             cleanContent = cleanContent.replaceAll("```[a-zA-Z]*", "").replaceAll("```", "").trim();
         }
         // Essayer de parser le JSON
-        if (response.body() == null) {
-                    callback.onError("Réponse vide du serveur");
-                    return;
-                }
+        // Removed invalid response check
                 try {
             JSONObject json = new JSONObject(cleanContent);
             response.narration = json.optString("narration", "").trim();
@@ -200,10 +197,7 @@ public class GameMasterAI {
                 // Si narration contient encore du JSON imbrique
                 String innerNarration = response.narration;
                 if (innerNarration.startsWith("{") && innerNarration.endsWith("}")) {
-                    if (response.body() == null) {
-                    callback.onError("Réponse vide du serveur");
-                    return;
-                }
+        // Removed invalid response check
                 try {
                         JSONObject inner = new JSONObject(innerNarration);
                         String deepNarration = inner.optString("narration", "").trim();
@@ -250,10 +244,7 @@ public class GameMasterAI {
         eq.setDescription(json.optString("description", ""));
         eq.setType(json.optString("type", "Arme"));
         String rarityStr = json.optString("rarity", "COMMON");
-        if (response.body() == null) {
-                    callback.onError("Réponse vide du serveur");
-                    return;
-                }
+        // Removed invalid response check
                 try {
             eq.setRarity(Rarity.valueOf(rarityStr.toUpperCase()));
         } catch (Exception e) {

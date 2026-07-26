@@ -192,6 +192,7 @@ public class InventoryActivity extends AppCompatActivity {
     }
 
     private void addEquipmentCard(LinearLayout parent, Equipment e) {
+        if (e == null) return;
         CardView card = new CardView(this);
         card.setCardBackgroundColor(Color.parseColor("#1A1A2E"));
         card.setRadius(16);
@@ -246,6 +247,7 @@ public class InventoryActivity extends AppCompatActivity {
     }
 
     private void addMountCard(LinearLayout parent, Mount m) {
+        if (m == null) return;
         CardView card = createBaseCard();
         LinearLayout inner = new LinearLayout(this);
         inner.setOrientation(LinearLayout.VERTICAL);
@@ -268,6 +270,7 @@ public class InventoryActivity extends AppCompatActivity {
     }
 
     private void addSpaceshipCard(LinearLayout parent, Spaceship s) {
+        if (s == null) return;
         CardView card = createBaseCard();
         LinearLayout inner = new LinearLayout(this);
         inner.setOrientation(LinearLayout.VERTICAL);
@@ -361,7 +364,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getWeapons() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Arme") || e.getType().equalsIgnoreCase("Weapon"))) {
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Arme") || e.getType().equalsIgnoreCase("Weapon"))) {
                 list.add(e);
             }
         }
@@ -371,7 +374,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getArmors() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Armure") || e.getType().equalsIgnoreCase("Armor")
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Armure") || e.getType().equalsIgnoreCase("Armor")
                     || e.getType().equalsIgnoreCase("Chest") || e.getType().equalsIgnoreCase("Bouclier")
                     || e.getType().equalsIgnoreCase("Shield"))) {
                 list.add(e);
@@ -383,7 +386,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getHats() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Chapeau") || e.getType().equalsIgnoreCase("Hat")
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Chapeau") || e.getType().equalsIgnoreCase("Hat")
                     || e.getType().equalsIgnoreCase("Casque") || e.getType().equalsIgnoreCase("Helmet"))) {
                 list.add(e);
             }
@@ -394,7 +397,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getGloves() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Gant") || e.getType().equalsIgnoreCase("Glove"))) {
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Gant") || e.getType().equalsIgnoreCase("Glove"))) {
                 list.add(e);
             }
         }
@@ -404,7 +407,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getPants() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Pantalon") || e.getType().equalsIgnoreCase("Pants")
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Pantalon") || e.getType().equalsIgnoreCase("Pants")
                     || e.getType().equalsIgnoreCase("Jambe") || e.getType().equalsIgnoreCase("Leg"))) {
                 list.add(e);
             }
@@ -415,7 +418,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getBoots() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Botte") || e.getType().equalsIgnoreCase("Boot"))) {
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Botte") || e.getType().equalsIgnoreCase("Boot"))) {
                 list.add(e);
             }
         }
@@ -425,7 +428,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getRings() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Anneau") || e.getType().equalsIgnoreCase("Ring"))) {
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Anneau") || e.getType().equalsIgnoreCase("Ring"))) {
                 list.add(e);
             }
         }
@@ -435,7 +438,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getNecklaces() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Collier") || e.getType().equalsIgnoreCase("Necklace")
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Collier") || e.getType().equalsIgnoreCase("Necklace")
                     || e.getType().equalsIgnoreCase("Amulette") || e.getType().equalsIgnoreCase("Amulet"))) {
                 list.add(e);
             }
@@ -446,7 +449,7 @@ public class InventoryActivity extends AppCompatActivity {
     private List<Equipment> getGrimoires() {
         List<Equipment> list = new ArrayList<>();
         for (Equipment e : dataManager.loadEquipmentCatalog()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Grimoire") || e.getType().equalsIgnoreCase("Spellbook"))) {
+            if (e != null && e.getType() != null && (e.getType().equalsIgnoreCase("Grimoire") || e.getType().equalsIgnoreCase("Spellbook"))) {
                 list.add(e);
             }
         }

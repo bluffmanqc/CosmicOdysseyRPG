@@ -144,7 +144,8 @@ public class DataManager {
     public List<Equipment> loadEquipmentCatalog() {
         String json = prefs.getString(KEY_EQUIPMENT_CATALOG, null);
         if (json != null) {
-            return gson.fromJson(json, new TypeToken<List<Equipment>>(){}.getType());
+            List<Equipment> result = gson.fromJson(json, new TypeToken<List<Equipment>>(){}.getType());
+            return result != null ? result : new ArrayList<>();
         }
         return new ArrayList<>();
     }

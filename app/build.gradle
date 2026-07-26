@@ -11,6 +11,9 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
+    buildFeatures {
+        buildConfig true
+    }
     namespace 'com.cosmicodyssey.rpg'
     compileSdk 34
 

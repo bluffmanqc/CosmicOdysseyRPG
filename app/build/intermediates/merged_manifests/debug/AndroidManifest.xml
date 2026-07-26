@@ -40,7 +40,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CosmicOdyssey"
-        android:usesCleartextTraffic="true" >
+        android:usesCleartextTraffic="false" >
         <activity
             android:name="com.cosmicodyssey.rpg.activities.SplashActivity"
             android:exported="true"
@@ -100,6 +100,7 @@
 
         <activity
             android:name="com.cosmicodyssey.rpg.InventoryActivity"
+            android:exported="false"
             android:theme="@style/Theme.CosmicOdyssey" />
 
         <provider
