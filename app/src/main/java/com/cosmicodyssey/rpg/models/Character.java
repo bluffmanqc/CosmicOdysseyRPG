@@ -30,8 +30,11 @@ public class Character {
     private String avatarUrl;
     private String avatarType;
     private String description;
+    private String story;
     @Ignore
     private CharacterStats stats;
+    private int skillPoints;
+    private String skills;
 
     @Ignore
     private List<Equipment> equipments;
@@ -69,6 +72,9 @@ public class Character {
         this.knownSystems = new ArrayList<>();
         this.visitedPlanets = new ArrayList<>();
         this.avatarType = "ai";
+        this.story = "";
+        this.skillPoints = 0;
+        this.skills = "";
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
     }
@@ -162,5 +168,15 @@ public class Character {
     public String generateImagePrompt() {
         return name + ", " + race + " " + className + ", sci-fi RPG portrait";
     }
+
+
+    public String getStory() { return story; }
+    public void setStory(String story) { this.story = story; }
+    
+    public int getSkillPoints() { return skillPoints; }
+    public void setSkillPoints(int skillPoints) { this.skillPoints = skillPoints; }
+    
+    public String getSkills() { return skills; }
+    public void setSkills(String skills) { this.skills = skills; }
 
 }

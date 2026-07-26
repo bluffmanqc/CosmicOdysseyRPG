@@ -56,6 +56,8 @@ drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_merchant_placeholder
 drawable ic_mount_placeholder
+drawable ic_play_arrow
+drawable ic_replay
 drawable ic_ship_placeholder
 drawable ic_volume_off
 drawable ic_volume_on
@@ -113,6 +115,7 @@ id inputText
 id intelligenceBar
 id intelligenceText
 id intelligenceValue
+id inventoryBtn
 id itemImage
 id joinPartyBtn
 id levelText
@@ -146,6 +149,7 @@ id partyList
 id partyName
 id partyNameInput
 id partyPlayers
+id playBtn
 id playVoiceBtn
 id prevPageBtn
 id priceText

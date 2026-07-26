@@ -4,6 +4,7 @@ package com.cosmicodyssey.rpg.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -59,6 +60,9 @@ public final class ActivityCharacterSheetBinding implements ViewBinding {
   public final TextView intelligenceText;
 
   @NonNull
+  public final Button inventoryBtn;
+
+  @NonNull
   public final TextView levelText;
 
   @NonNull
@@ -93,10 +97,10 @@ public final class ActivityCharacterSheetBinding implements ViewBinding {
       @NonNull TextView constitutionText, @NonNull TextView creditsText,
       @NonNull TextView dexterityText, @NonNull ProgressBar energyBar, @NonNull TextView energyText,
       @NonNull RecyclerView equipmentList, @NonNull ProgressBar hpBar, @NonNull TextView hpText,
-      @NonNull TextView intelligenceText, @NonNull TextView levelText, @NonNull TextView luckText,
-      @NonNull ImageView mountImage, @NonNull TextView nameText, @NonNull TextView raceClassText,
-      @NonNull ProgressBar shieldBar, @NonNull TextView shieldText, @NonNull ImageView shipImage,
-      @NonNull TextView strengthText, @NonNull TextView wisdomText) {
+      @NonNull TextView intelligenceText, @NonNull Button inventoryBtn, @NonNull TextView levelText,
+      @NonNull TextView luckText, @NonNull ImageView mountImage, @NonNull TextView nameText,
+      @NonNull TextView raceClassText, @NonNull ProgressBar shieldBar, @NonNull TextView shieldText,
+      @NonNull ImageView shipImage, @NonNull TextView strengthText, @NonNull TextView wisdomText) {
     this.rootView = rootView;
     this.avatarImage = avatarImage;
     this.cargoImage = cargoImage;
@@ -110,6 +114,7 @@ public final class ActivityCharacterSheetBinding implements ViewBinding {
     this.hpBar = hpBar;
     this.hpText = hpText;
     this.intelligenceText = intelligenceText;
+    this.inventoryBtn = inventoryBtn;
     this.levelText = levelText;
     this.luckText = luckText;
     this.mountImage = mountImage;
@@ -221,6 +226,12 @@ public final class ActivityCharacterSheetBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.inventoryBtn;
+      Button inventoryBtn = ViewBindings.findChildViewById(rootView, id);
+      if (inventoryBtn == null) {
+        break missingId;
+      }
+
       id = R.id.levelText;
       TextView levelText = ViewBindings.findChildViewById(rootView, id);
       if (levelText == null) {
@@ -283,8 +294,9 @@ public final class ActivityCharacterSheetBinding implements ViewBinding {
 
       return new ActivityCharacterSheetBinding((ScrollView) rootView, avatarImage, cargoImage,
           charismaText, constitutionText, creditsText, dexterityText, energyBar, energyText,
-          equipmentList, hpBar, hpText, intelligenceText, levelText, luckText, mountImage, nameText,
-          raceClassText, shieldBar, shieldText, shipImage, strengthText, wisdomText);
+          equipmentList, hpBar, hpText, intelligenceText, inventoryBtn, levelText, luckText,
+          mountImage, nameText, raceClassText, shieldBar, shieldText, shipImage, strengthText,
+          wisdomText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -159,45 +159,67 @@ public class GameMasterAI {
 
     private StoryResponse parseStoryResponse(String content) {
         StoryResponse response = new StoryResponse();
+        if (content == null || content.trim().isEmpty()) {
+            response.narration = "Le MJ est silencieux...";
+            return response;
+        }
+        String cleanContent = content.trim();
+        // Nettoyer les balises markdown
+        if (cleanContent.startsWith("```json")) {
+            int start = cleanContent.indexOf("{");
+            int end = cleanContent.lastIndexOf("}");
+            if (start >= 0 && end > start) {
+                cleanContent = cleanContent.substring(start, end + 1);
+            }
+        } else if (cleanContent.startsWith("```")) {
+            cleanContent = cleanContent.replaceAll("```[a-zA-Z]*", "").replaceAll("```", "").trim();
+        }
+        // Essayer de parser le JSON
         try {
-            int jsonStart = content.indexOf("{");
-            int jsonEnd = content.lastIndexOf("}");
-            if (jsonStart >= 0 && jsonEnd > jsonStart) {
-                String jsonStr = content.substring(jsonStart, jsonEnd + 1);
-                JSONObject json = new JSONObject(jsonStr);
-                
-                response.narration = json.optString("narration", content);
-                response.voiceText = json.optString("voiceText", response.narration.substring(0, 
-                        Math.min(300, response.narration.length())));
-                response.sceneImage = json.optString("sceneImage", "");
-                
-                JSONArray choices = json.optJSONArray("choices");
-                if (choices != null) {
-                    for (int i = 0; i < choices.length(); i++) {
-                        response.choices.add(choices.getString(i));
-                    }
-                }
-                
-                JSONArray newItems = json.optJSONArray("newItems");
-                if (newItems != null) {
-                    for (int i = 0; i < newItems.length(); i++) {
-                        response.newItems.add(parseEquipmentFromJson(newItems.getJSONObject(i)));
-                    }
-                }
-                
-                JSONArray newPlanets = json.optJSONArray("newPlanets");
-                if (newPlanets != null) {
-                    for (int i = 0; i < newPlanets.length(); i++) {
-                        response.newPlanets.add(parsePlanetFromJson(newPlanets.getJSONObject(i)));
-                    }
-                }
+            JSONObject json = new JSONObject(cleanContent);
+            response.narration = json.optString("narration", "").trim();
+            if (response.narration.isEmpty()) {
+                response.narration = cleanContent;
             } else {
-                response.narration = content;
-                response.voiceText = content.substring(0, Math.min(300, content.length()));
+                // Si narration contient encore du JSON imbrique
+                String innerNarration = response.narration;
+                if (innerNarration.startsWith("{") && innerNarration.endsWith("}")) {
+                    try {
+                        JSONObject inner = new JSONObject(innerNarration);
+                        String deepNarration = inner.optString("narration", "").trim();
+                        if (!deepNarration.isEmpty()) response.narration = deepNarration;
+                    } catch (Exception e) {
+                        // Garder innerNarration tel quel
+                    }
+                }
+            }
+            response.voiceText = json.optString("voiceText", "").trim();
+            if (response.voiceText.isEmpty()) {
+                response.voiceText = response.narration.length() > 300 ? response.narration.substring(0, 300) : response.narration;
+            }
+            response.sceneImage = json.optString("sceneImage", "").trim();
+            JSONArray choices = json.optJSONArray("choices");
+            if (choices != null) {
+                for (int i = 0; i < choices.length(); i++) {
+                    response.choices.add(choices.getString(i));
+                }
+            }
+            JSONArray newItems = json.optJSONArray("newItems");
+            if (newItems != null) {
+                for (int i = 0; i < newItems.length(); i++) {
+                    response.newItems.add(parseEquipmentFromJson(newItems.getJSONObject(i)));
+                }
+            }
+            JSONArray newPlanets = json.optJSONArray("newPlanets");
+            if (newPlanets != null) {
+                for (int i = 0; i < newPlanets.length(); i++) {
+                    response.newPlanets.add(parsePlanetFromJson(newPlanets.getJSONObject(i)));
+                }
             }
         } catch (Exception e) {
-            response.narration = content;
-            response.voiceText = content.substring(0, Math.min(300, content.length()));
+            // Si le parsing echoue, utiliser le texte brut nettoye
+            response.narration = cleanContent;
+            response.voiceText = cleanContent.length() > 300 ? cleanContent.substring(0, 300) : cleanContent;
         }
         return response;
     }

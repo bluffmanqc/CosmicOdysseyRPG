@@ -43,6 +43,9 @@ public final class ActivityGameSessionBinding implements ViewBinding {
   public final RecyclerView messageList;
 
   @NonNull
+  public final ImageButton playBtn;
+
+  @NonNull
   public final ImageView sceneImage;
 
   @NonNull
@@ -63,9 +66,9 @@ public final class ActivityGameSessionBinding implements ViewBinding {
   private ActivityGameSessionBinding(@NonNull LinearLayout rootView,
       @NonNull LinearLayout choicesContainer, @NonNull ImageButton diceBtn,
       @NonNull EditText inputText, @NonNull ProgressBar loadingProgress,
-      @NonNull ImageButton mapBtn, @NonNull RecyclerView messageList, @NonNull ImageView sceneImage,
-      @NonNull ScrollView scrollView, @NonNull ImageButton sendBtn, @NonNull ImageButton sheetBtn,
-      @NonNull ImageButton shopBtn, @NonNull ImageButton voiceBtn) {
+      @NonNull ImageButton mapBtn, @NonNull RecyclerView messageList, @NonNull ImageButton playBtn,
+      @NonNull ImageView sceneImage, @NonNull ScrollView scrollView, @NonNull ImageButton sendBtn,
+      @NonNull ImageButton sheetBtn, @NonNull ImageButton shopBtn, @NonNull ImageButton voiceBtn) {
     this.rootView = rootView;
     this.choicesContainer = choicesContainer;
     this.diceBtn = diceBtn;
@@ -73,6 +76,7 @@ public final class ActivityGameSessionBinding implements ViewBinding {
     this.loadingProgress = loadingProgress;
     this.mapBtn = mapBtn;
     this.messageList = messageList;
+    this.playBtn = playBtn;
     this.sceneImage = sceneImage;
     this.scrollView = scrollView;
     this.sendBtn = sendBtn;
@@ -144,6 +148,12 @@ public final class ActivityGameSessionBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.playBtn;
+      ImageButton playBtn = ViewBindings.findChildViewById(rootView, id);
+      if (playBtn == null) {
+        break missingId;
+      }
+
       id = R.id.sceneImage;
       ImageView sceneImage = ViewBindings.findChildViewById(rootView, id);
       if (sceneImage == null) {
@@ -181,7 +191,7 @@ public final class ActivityGameSessionBinding implements ViewBinding {
       }
 
       return new ActivityGameSessionBinding((LinearLayout) rootView, choicesContainer, diceBtn,
-          inputText, loadingProgress, mapBtn, messageList, sceneImage, scrollView, sendBtn,
+          inputText, loadingProgress, mapBtn, messageList, playBtn, sceneImage, scrollView, sendBtn,
           sheetBtn, shopBtn, voiceBtn);
     }
     String missingId = rootView.getResources().getResourceName(id);

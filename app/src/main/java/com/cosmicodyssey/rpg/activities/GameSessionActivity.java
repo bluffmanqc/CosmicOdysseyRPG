@@ -37,6 +37,8 @@ public class GameSessionActivity extends AppCompatActivity {
     private EditText inputText;
     private ImageButton sendBtn;
     private ImageButton voiceBtn;
+    private ImageButton playBtn;
+    private String currentVoiceText = "";
     private ImageButton diceBtn;
     private ImageButton mapBtn;
     private ImageButton sheetBtn;
@@ -95,6 +97,7 @@ public class GameSessionActivity extends AppCompatActivity {
         inputText = findViewById(R.id.inputText);
         sendBtn = findViewById(R.id.sendBtn);
         voiceBtn = findViewById(R.id.voiceBtn);
+        playBtn = findViewById(R.id.playBtn);
         diceBtn = findViewById(R.id.diceBtn);
         mapBtn = findViewById(R.id.mapBtn);
         sheetBtn = findViewById(R.id.sheetBtn);
@@ -112,6 +115,7 @@ public class GameSessionActivity extends AppCompatActivity {
     private void setupButtons() {
         sendBtn.setOnClickListener(v -> sendPlayerAction());
         voiceBtn.setOnClickListener(v -> toggleTTS());
+        playBtn.setOnClickListener(v -> replayVoice());
         diceBtn.setOnClickListener(v -> startActivity(new Intent(this, DiceRollActivity.class)));
         mapBtn.setOnClickListener(v -> startActivity(new Intent(this, GalaxyMapActivity.class)));
         sheetBtn.setOnClickListener(v -> startActivity(new Intent(this, CharacterSheetActivity.class)));
@@ -134,7 +138,11 @@ public class GameSessionActivity extends AppCompatActivity {
             @Override
             public void onSuccess(GameMasterAI.StoryResponse response) {
                 runOnUiThread(() -> {
-                    addGMMessage(response.narration, response.voiceText);
+                    String voiceText = response.voiceText;
+        if (voiceText == null || voiceText.length() < response.narration.length() / 2) {
+            voiceText = response.narration;
+        }
+        addGMMessage(response.narration, voiceText);
                     
                     if (response.sceneImage != null && !response.sceneImage.isEmpty()) {
                         String imageUrl = ai.generateSceneImageUrl(response.sceneImage);
@@ -193,7 +201,9 @@ public class GameSessionActivity extends AppCompatActivity {
         messageAdapter.notifyItemInserted(messages.size() - 1);
 
         if (ttsEnabled && voiceText != null) {
-            CosmicOdysseyApp.getInstance().getTTSManager().speak(voiceText);
+                currentVoiceText = voiceText;
+                updatePlayButtonIcon(true);
+                CosmicOdysseyApp.getInstance().getTTSManager().speak(voiceText);
         }
 
         scrollToBottom();
@@ -240,9 +250,18 @@ public class GameSessionActivity extends AppCompatActivity {
     private void toggleTTS() {
         ttsEnabled = !ttsEnabled;
         voiceBtn.setImageResource(ttsEnabled ? R.drawable.ic_volume_on : R.drawable.ic_volume_off);
+
         Toast.makeText(this, ttsEnabled ? "Voix activée" : "Voix désactivée", Toast.LENGTH_SHORT).show();
     }
+    private void updatePlayButtonIcon(boolean hasPlayed) {
+        playBtn.setImageResource(hasPlayed ? R.drawable.ic_replay : R.drawable.ic_play_arrow);
+    }
 
+    private void replayVoice() {
+        if (ttsEnabled && currentVoiceText != null) {
+            CosmicOdysseyApp.getInstance().getTTSManager().speak(currentVoiceText);
+        }
+    }
     private void scrollToBottom() {
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }

@@ -1,6 +1,7 @@
 package com.cosmicodyssey.rpg.models;
 
 import androidx.room.Entity;
+import androidx.room.TypeConverters;
 import androidx.room.PrimaryKey;
 import androidx.room.Ignore;
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@TypeConverters({com.cosmicodyssey.rpg.data.StringListConverter.class})
 public class Party {
     @PrimaryKey
 
@@ -29,8 +31,7 @@ public class Party {
     private String currentSystem;
     private String storyPrompt;
 
-    @Ignore
-    private List<String> storyHistory;
+        private List<String> storyHistory;
 
     @Ignore
     private List<Equipment> sharedEquipment;

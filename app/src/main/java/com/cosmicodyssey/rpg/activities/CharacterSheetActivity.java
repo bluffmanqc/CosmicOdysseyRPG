@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import android.content.Intent;
+import com.cosmicodyssey.rpg.InventoryActivity;
 import com.cosmicodyssey.rpg.R;
 import com.cosmicodyssey.rpg.ai.GameMasterAI;
 import com.cosmicodyssey.rpg.data.DataManager;
@@ -96,9 +98,18 @@ public class CharacterSheetActivity extends AppCompatActivity {
 
         // Avatar avec mise à jour selon équipement
         String avatarUrl = character.getAvatarUrl();
-        if (avatarUrl != null) {
+        if (avatarUrl != null && !avatarUrl.isEmpty()) {
             Glide.with(this).load(avatarUrl).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
+        } else {
+            avatarImage.setImageResource(R.drawable.ic_character_placeholder);
         }
+        
+        // Bouton inventaire
+        findViewById(R.id.inventoryBtn).setOnClickListener(v -> {
+            Intent intent = new Intent(CharacterSheetActivity.this, InventoryActivity.class);
+            intent.putExtra("character_id", character.getId());
+            startActivity(intent);
+        });
 
         // Stats bars
         hpBar.setMax(character.getMaxHitPoints());

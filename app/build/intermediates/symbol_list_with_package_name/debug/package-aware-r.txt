@@ -3152,6 +3152,8 @@ drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
+drawable ic_play_arrow
+drawable ic_replay
 drawable ic_search_black_24
 drawable ic_ship_placeholder
 drawable ic_volume_off
@@ -3514,6 +3516,7 @@ id inputText
 id intelligenceBar
 id intelligenceText
 id intelligenceValue
+id inventoryBtn
 id invisible
 id inward
 id is_pooling_container_tag
@@ -3677,6 +3680,7 @@ id pathRelative
 id peekHeight
 id percent
 id pin
+id playBtn
 id playVoiceBtn
 id pooling_container_listener_holder_tag
 id position

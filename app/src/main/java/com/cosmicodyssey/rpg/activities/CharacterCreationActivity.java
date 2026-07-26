@@ -112,7 +112,23 @@ public class CharacterCreationActivity extends AppCompatActivity {
         String[] backgrounds = {"Vétéran de guerre", "Scientifique", "Criminel", "Noble", "Réfugié", "Archéologue"};
 
         raceSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, races));
+        raceSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+                applyBaseStats(raceSpinner.getSelectedItem().toString(), classSpinner.getSelectedItem().toString());
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
         classSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, classes));
+        classSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+                applyBaseStats(raceSpinner.getSelectedItem().toString(), classSpinner.getSelectedItem().toString());
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
         backgroundSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, backgrounds));
     }
 
@@ -250,4 +266,51 @@ public class CharacterCreationActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    // Applique les stats de base selon la classe et la race choisies
+    private void applyBaseStats(String race, String className) {
+        int[] baseStats = new int[6]; // STR, DEX, CON, INT, WIS, CHA
+        
+        // Stats de base par race
+        switch(race) {
+            case "Humain": baseStats = new int[]{12,12,12,12,12,12}; break;
+            case "Xylarien": baseStats = new int[]{10,14,10,14,12,10}; break;
+            case "Néo-Machine": baseStats = new int[]{14,10,14,12,10,10}; break;
+            case "Vorak": baseStats = new int[]{16,10,14,8,10,8}; break;
+            case "Etherean": baseStats = new int[]{8,12,10,16,14,12}; break;
+            case "Draconien": baseStats = new int[]{14,12,14,10,10,12}; break;
+            default: baseStats = new int[]{10,10,10,10,10,10}; break;
+        }
+        
+        // Bonus de classe
+        switch(className) {
+            case "Soldat": baseStats[0]+=2; baseStats[2]+=2; break;
+            case "Pilote": baseStats[1]+=2; baseStats[5]+=2; break;
+            case "Ingénieur": baseStats[2]+=2; baseStats[3]+=2; break;
+            case "Scientifique": baseStats[3]+=2; baseStats[4]+=2; break;
+            case "Médecin": baseStats[4]+=2; baseStats[5]+=2; break;
+            case "Marchand": baseStats[5]+=3; break;
+            case "Hacker": baseStats[1]+=2; baseStats[3]+=2; break;
+            case "Explorateur": baseStats[1]+=2; baseStats[4]+=2; break;
+        }
+        
+        strengthBar.setProgress(baseStats[0]);
+        dexterityBar.setProgress(baseStats[1]);
+        constitutionBar.setProgress(baseStats[2]);
+        intelligenceBar.setProgress(baseStats[3]);
+        wisdomBar.setProgress(baseStats[4]);
+        charismaBar.setProgress(baseStats[5]);
+        
+        updateStatValues();
+    }
+    
+    private void updateStatValues() {
+        strengthValue.setText(String.valueOf(strengthBar.getProgress()));
+        dexterityValue.setText(String.valueOf(dexterityBar.getProgress()));
+        constitutionValue.setText(String.valueOf(constitutionBar.getProgress()));
+        intelligenceValue.setText(String.valueOf(intelligenceBar.getProgress()));
+        wisdomValue.setText(String.valueOf(wisdomBar.getProgress()));
+        charismaValue.setText(String.valueOf(charismaBar.getProgress()));
+    }
+
 }

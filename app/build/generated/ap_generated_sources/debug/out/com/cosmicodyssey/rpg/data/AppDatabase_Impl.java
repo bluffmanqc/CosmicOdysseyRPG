@@ -30,16 +30,16 @@ public final class AppDatabase_Impl extends AppDatabase {
     final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `Character` (`id` TEXT NOT NULL, `name` TEXT, `race` TEXT, `className` TEXT, `background` TEXT, `alignment` TEXT, `level` INTEGER NOT NULL, `experience` INTEGER NOT NULL, `hitPoints` INTEGER NOT NULL, `maxHitPoints` INTEGER NOT NULL, `shieldPoints` INTEGER NOT NULL, `maxShieldPoints` INTEGER NOT NULL, `energy` INTEGER NOT NULL, `maxEnergy` INTEGER NOT NULL, `credits` INTEGER NOT NULL, `avatarUrl` TEXT, `avatarType` TEXT, `description` TEXT, `currentPlanet` TEXT, `currentSystem` TEXT, `partyId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `Character` (`id` TEXT NOT NULL, `name` TEXT, `race` TEXT, `className` TEXT, `background` TEXT, `alignment` TEXT, `level` INTEGER NOT NULL, `experience` INTEGER NOT NULL, `hitPoints` INTEGER NOT NULL, `maxHitPoints` INTEGER NOT NULL, `shieldPoints` INTEGER NOT NULL, `maxShieldPoints` INTEGER NOT NULL, `energy` INTEGER NOT NULL, `maxEnergy` INTEGER NOT NULL, `credits` INTEGER NOT NULL, `avatarUrl` TEXT, `avatarType` TEXT, `description` TEXT, `story` TEXT, `skillPoints` INTEGER NOT NULL, `skills` TEXT, `currentPlanet` TEXT, `currentSystem` TEXT, `partyId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `Equipment` (`id` TEXT NOT NULL, `name` TEXT, `description` TEXT, `type` TEXT, `levelRequired` INTEGER NOT NULL, `damage` INTEGER NOT NULL, `defense` INTEGER NOT NULL, `shieldBonus` INTEGER NOT NULL, `energyBonus` INTEGER NOT NULL, `strengthBonus` INTEGER NOT NULL, `dexterityBonus` INTEGER NOT NULL, `intelligenceBonus` INTEGER NOT NULL, `psionicsBonus` INTEGER NOT NULL, `technologyBonus` INTEGER NOT NULL, `imageUrl` TEXT, `lore` TEXT, `origin` TEXT, `creatorId` TEXT, `createdAt` INTEGER NOT NULL, `equipped` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `Mount` (`id` TEXT NOT NULL, `name` TEXT, `species` TEXT, `description` TEXT, `levelRequired` INTEGER NOT NULL, `speed` INTEGER NOT NULL, `cargoCapacity` INTEGER NOT NULL, `combatBonus` INTEGER NOT NULL, `imageUrl` TEXT, `lore` TEXT, `origin` TEXT, `creatorId` TEXT, `createdAt` INTEGER NOT NULL, `owned` INTEGER NOT NULL, PRIMARY KEY(`id`))");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `Party` (`id` TEXT NOT NULL, `name` TEXT, `description` TEXT, `gameMasterType` TEXT, `difficulty` TEXT, `hostId` TEXT, `currentPlanet` TEXT, `currentSystem` TEXT, `storyPrompt` TEXT, `isActive` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `lastActivity` INTEGER NOT NULL, `partyCode` TEXT, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `Party` (`id` TEXT NOT NULL, `name` TEXT, `description` TEXT, `gameMasterType` TEXT, `difficulty` TEXT, `hostId` TEXT, `currentPlanet` TEXT, `currentSystem` TEXT, `storyPrompt` TEXT, `storyHistory` TEXT, `isActive` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `lastActivity` INTEGER NOT NULL, `partyCode` TEXT, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `Planet` (`id` TEXT NOT NULL, `name` TEXT, `systemId` TEXT, `biome` TEXT, `description` TEXT, `dangerLevel` INTEGER NOT NULL, `resourceLevel` INTEGER NOT NULL, `imageUrl` TEXT, `mapImageUrl` TEXT, `discovered` INTEGER NOT NULL, `visited` INTEGER NOT NULL, `x` REAL NOT NULL, `y` REAL NOT NULL, `atmosphere` TEXT, `gravity` TEXT, `temperature` TEXT, `dominantFaction` TEXT, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `Rule` (`id` TEXT NOT NULL, `title` TEXT, `category` TEXT, `content` TEXT, `imageUrl` TEXT, `source` TEXT, `authorId` TEXT, `createdAt` INTEGER NOT NULL, `isOfficial` INTEGER NOT NULL, `pageNumber` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `Spaceship` (`id` TEXT NOT NULL, `name` TEXT, `model` TEXT, `description` TEXT, `levelRequired` INTEGER NOT NULL, `speed` INTEGER NOT NULL, `hull` INTEGER NOT NULL, `maxHull` INTEGER NOT NULL, `shields` INTEGER NOT NULL, `maxShields` INTEGER NOT NULL, `weaponSlots` INTEGER NOT NULL, `cargoCapacity` INTEGER NOT NULL, `crewCapacity` INTEGER NOT NULL, `jumpRange` INTEGER NOT NULL, `imageUrl` TEXT, `lore` TEXT, `origin` TEXT, `creatorId` TEXT, `createdAt` INTEGER NOT NULL, `owned` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `StarSystem` (`id` TEXT NOT NULL, `name` TEXT, `starType` TEXT, `description` TEXT, `imageUrl` TEXT, `x` REAL NOT NULL, `y` REAL NOT NULL, `discovered` INTEGER NOT NULL, `connected` INTEGER NOT NULL, `faction` TEXT, `threatLevel` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '85ba1b5a12b817382f9613a672748927')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c0b3caad3dbd89f4a089b108b476f74f')");
       }
 
       @Override
@@ -95,7 +95,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsCharacter = new HashMap<String, TableInfo.Column>(23);
+        final HashMap<String, TableInfo.Column> _columnsCharacter = new HashMap<String, TableInfo.Column>(26);
         _columnsCharacter.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCharacter.put("name", new TableInfo.Column("name", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCharacter.put("race", new TableInfo.Column("race", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -114,6 +114,9 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsCharacter.put("avatarUrl", new TableInfo.Column("avatarUrl", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCharacter.put("avatarType", new TableInfo.Column("avatarType", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCharacter.put("description", new TableInfo.Column("description", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCharacter.put("story", new TableInfo.Column("story", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCharacter.put("skillPoints", new TableInfo.Column("skillPoints", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsCharacter.put("skills", new TableInfo.Column("skills", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCharacter.put("currentPlanet", new TableInfo.Column("currentPlanet", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCharacter.put("currentSystem", new TableInfo.Column("currentSystem", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsCharacter.put("partyId", new TableInfo.Column("partyId", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -182,7 +185,7 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoMount + "\n"
                   + " Found:\n" + _existingMount);
         }
-        final HashMap<String, TableInfo.Column> _columnsParty = new HashMap<String, TableInfo.Column>(13);
+        final HashMap<String, TableInfo.Column> _columnsParty = new HashMap<String, TableInfo.Column>(14);
         _columnsParty.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsParty.put("name", new TableInfo.Column("name", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsParty.put("description", new TableInfo.Column("description", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -192,6 +195,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsParty.put("currentPlanet", new TableInfo.Column("currentPlanet", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsParty.put("currentSystem", new TableInfo.Column("currentSystem", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsParty.put("storyPrompt", new TableInfo.Column("storyPrompt", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsParty.put("storyHistory", new TableInfo.Column("storyHistory", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsParty.put("isActive", new TableInfo.Column("isActive", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsParty.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsParty.put("lastActivity", new TableInfo.Column("lastActivity", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -305,7 +309,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "85ba1b5a12b817382f9613a672748927", "7d46df7ff8f52aabf4738f0e53090fb8");
+    }, "c0b3caad3dbd89f4a089b108b476f74f", "6606c029cbe3f71ed687ef6edf74e574");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
