@@ -1,4 +1,7 @@
 package com.cosmicodyssey.rpg.ai;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+import com.cosmicodyssey.rpg.BuildConfig;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -49,7 +52,7 @@ public class GameMasterAI {
         this.context = context;
         this.gson = new Gson();
         this.prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        this.apiKey = prefs.getString(KEY_OPENROUTER_API, "");
+        this.apiKey = prefs.getString(KEY_OPENROUTER_API, BuildConfig.OPENROUTER_API_KEY);
         this.client = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
@@ -121,6 +124,10 @@ public class GameMasterAI {
                     callback.onError("Erreur API: " + response.code());
                     return;
                 }
+                if (response.body() == null) {
+                    callback.onError("Réponse vide du serveur");
+                    return;
+                }
                 try {
                     JSONObject json = new JSONObject(response.body().string());
                     String content = json.getJSONArray("choices")
@@ -180,7 +187,11 @@ public class GameMasterAI {
             cleanContent = cleanContent.replaceAll("```[a-zA-Z]*", "").replaceAll("```", "").trim();
         }
         // Essayer de parser le JSON
-        try {
+        if (response.body() == null) {
+                    callback.onError("Réponse vide du serveur");
+                    return;
+                }
+                try {
             JSONObject json = new JSONObject(cleanContent);
             response.narration = json.optString("narration", "").trim();
             if (response.narration.isEmpty()) {
@@ -189,7 +200,11 @@ public class GameMasterAI {
                 // Si narration contient encore du JSON imbrique
                 String innerNarration = response.narration;
                 if (innerNarration.startsWith("{") && innerNarration.endsWith("}")) {
-                    try {
+                    if (response.body() == null) {
+                    callback.onError("Réponse vide du serveur");
+                    return;
+                }
+                try {
                         JSONObject inner = new JSONObject(innerNarration);
                         String deepNarration = inner.optString("narration", "").trim();
                         if (!deepNarration.isEmpty()) response.narration = deepNarration;
@@ -235,7 +250,11 @@ public class GameMasterAI {
         eq.setDescription(json.optString("description", ""));
         eq.setType(json.optString("type", "Arme"));
         String rarityStr = json.optString("rarity", "COMMON");
-        try {
+        if (response.body() == null) {
+                    callback.onError("Réponse vide du serveur");
+                    return;
+                }
+                try {
             eq.setRarity(Rarity.valueOf(rarityStr.toUpperCase()));
         } catch (Exception e) {
             eq.setRarity(Rarity.COMMON);
@@ -316,10 +335,11 @@ public class GameMasterAI {
     }
 
     private String encodePrompt(String prompt) {
-        return prompt.replace(" ", "%20")
-                .replace(",", "%2C")
-                .replace("'", "%27")
-                .replace("&", "%26");
+        try {
+            return java.net.URLEncoder.encode(prompt, "UTF-8");
+        } catch (java.io.UnsupportedEncodingException e) {
+            return prompt;
+        }
     }
 
     public interface AIResponseCallback {
