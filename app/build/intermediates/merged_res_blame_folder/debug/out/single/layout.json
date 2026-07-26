@@ -1,94 +1,90 @@
 [
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_shop_card.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_shop_card.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_galaxy_map.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_galaxy_map.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_catalog.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_catalog.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_message.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/item_message.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_market_card.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_market_card.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_market_card.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/item_market_card.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_party_list.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_party_list.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_settings.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_settings.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_rule_page.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_rule_page.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/page_catalog.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/page_catalog.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_character_sheet.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_character_sheet.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_rulebook.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_rulebook.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_catalog_card.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_catalog_card.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/dialog_create_party.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/dialog_create_party.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_rulebook.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_rulebook.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_catalog.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_catalog.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_galaxy_map.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_galaxy_map.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_catalog_card.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/item_catalog_card.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/page_catalog.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/page_catalog.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_main.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_main.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_dice_roll.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_dice_roll.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_equipment_slot.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/item_equipment_slot.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_shop.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_shop.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_rule_page.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/item_rule_page.xml"
+    },
+    {
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_party.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/item_party.xml"
+    },
+    {
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_shop.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_shop.xml"
+    },
+    {
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_splash.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_splash.xml"
+    },
+    {
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_party_list.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_party_list.xml"
     },
     {
         "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_character_creation.xml",
         "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_character_creation.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_message.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_message.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_dice_roll.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_dice_roll.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_equipment_slot.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_equipment_slot.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_game_session.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_game_session.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_game_session.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_game_session.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_black_market.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_black_market.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_main.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_main.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_shop_card.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/item_shop_card.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_party.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_party.xml"
-    },
-    {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_black_market.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_black_market.xml"
-    },
-    {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_settings.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_settings.xml"
-    },
-    {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/dialog_create_party.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/dialog_create_party.xml"
-    },
-    {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_splash.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_splash.xml"
-    },
-    {
-        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_character_creation.xml",
-        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_character_creation.xml"
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_character_sheet.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_character_sheet.xml"
     }
 ]

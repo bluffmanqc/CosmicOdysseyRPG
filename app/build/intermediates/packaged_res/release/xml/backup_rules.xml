@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Sauvegarder les SharedPreferences (clés API) -->
+    <include 
+        domain="sharedpref" 
+        path="." />
+    
+    <!-- Sauvegarder la base de données -->
+    <include 
+        domain="database" 
+        path="." />
+    
+    <!-- Sauvegarder les fichiers internes (sauvegardes de jeu) -->
+    <include 
+        domain="file" 
+        path="." />
+</full-backup-content>

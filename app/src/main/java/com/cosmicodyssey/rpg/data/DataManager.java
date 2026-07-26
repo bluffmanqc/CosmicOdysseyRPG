@@ -22,6 +22,7 @@ import java.util.List;
 public class DataManager {
     private static final String PREFS_NAME = "CosmicOdysseyData";
     private static final String KEY_CURRENT_CHARACTER = "current_character";
+    private static final String KEY_CHARACTERS_LIST = "characters_list";
     private static final String KEY_PARTIES = "parties";
     private static final String KEY_EQUIPMENT_CATALOG = "equipment_catalog";
     private static final String KEY_MOUNT_CATALOG = "mount_catalog";
@@ -29,7 +30,7 @@ public class DataManager {
     private static final String KEY_CARGO_CATALOG = "cargo_catalog";
     private static final String KEY_MARKET_LISTINGS = "market_listings";
     private static final String KEY_RULES = "rules";
-    
+
     private final Context context;
     private final SharedPreferences prefs;
     private final Gson gson;
@@ -43,10 +44,45 @@ public class DataManager {
         if (!saveDir.exists()) saveDir.mkdirs();
     }
 
+    // ==================== PERSONNAGES MULTIPLES ====================
+
     public void saveCharacter(Character character) {
         String json = gson.toJson(character);
         prefs.edit().putString(KEY_CURRENT_CHARACTER, json).apply();
         saveToFile("character_" + character.getId() + ".json", json);
+        addToCharactersList(character);
+    }
+
+    private void addToCharactersList(Character character) {
+        List<Character> characters = loadAllCharacters();
+        characters.removeIf(c -> c.getId().equals(character.getId()));
+        characters.add(character);
+        prefs.edit().putString(KEY_CHARACTERS_LIST, gson.toJson(characters)).apply();
+    }
+
+    public List<Character> loadAllCharacters() {
+        String json = prefs.getString(KEY_CHARACTERS_LIST, null);
+        if (json != null) {
+            return gson.fromJson(json, new TypeToken<List<Character>>(){}.getType());
+        }
+        return new ArrayList<>();
+    }
+
+    public void deleteCharacter(String characterId) {
+        List<Character> characters = loadAllCharacters();
+        characters.removeIf(c -> c.getId().equals(characterId));
+        prefs.edit().putString(KEY_CHARACTERS_LIST, gson.toJson(characters)).apply();
+        File file = new File(saveDir, "character_" + characterId + ".json");
+        if (file.exists()) file.delete();
+    }
+
+    public void setCurrentCharacter(String characterId) {
+        for (Character c : loadAllCharacters()) {
+            if (c.getId().equals(characterId)) {
+                prefs.edit().putString(KEY_CURRENT_CHARACTER, gson.toJson(c)).apply();
+                return;
+            }
+        }
     }
 
     public Character loadCharacter() {
@@ -54,8 +90,14 @@ public class DataManager {
         if (json != null) {
             return gson.fromJson(json, Character.class);
         }
+        List<Character> characters = loadAllCharacters();
+        if (!characters.isEmpty()) {
+            return characters.get(0);
+        }
         return null;
     }
+
+    // ==================== PARTIES ====================
 
     public void saveParty(Party party) {
         List<Party> parties = loadParties();
@@ -89,6 +131,8 @@ public class DataManager {
         }
         return null;
     }
+
+    // ==================== CATALOGUES ====================
 
     public void addToCatalog(Equipment equipment) {
         List<Equipment> catalog = loadEquipmentCatalog();
@@ -141,7 +185,7 @@ public class DataManager {
         for (Spaceship s : party.getSharedSpaceships()) addToCatalog(s);
     }
 
-    // ==================== MARCHÉ NOIR ====================
+    // ==================== MARCHE NOIR ====================
 
     public void addMarketListing(MarketListing listing) {
         List<MarketListing> listings = loadMarketListings();

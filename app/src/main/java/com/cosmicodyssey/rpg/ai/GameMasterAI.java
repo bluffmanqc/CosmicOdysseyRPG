@@ -31,6 +31,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import com.cosmicodyssey.rpg.utils.ProgressionConfig;
 
 public class GameMasterAI {
     private static final String PREFS_NAME = "CosmicOdysseyPrefs";
@@ -71,7 +72,7 @@ public class GameMasterAI {
             return;
         }
 
-        String systemPrompt = buildSystemPrompt(party);
+        String systemPrompt = buildSystemPrompt(party, character);
         String userPrompt = buildUserPrompt(character, playerAction, party);
 
         JsonObject message = new JsonObject();
@@ -94,10 +95,11 @@ public class GameMasterAI {
         messages.add(message);
 
         JsonObject body = new JsonObject();
-        body.addProperty("model", "openrouter/free");
+        body.addProperty("model", "openrouter/auto");
         body.add("messages", messages);
         body.addProperty("temperature", 0.85);
-        body.addProperty("max_tokens", 1500);
+        body.addProperty("max_tokens", 2000);
+        body.addProperty("stream", false);
 
         Request request = new Request.Builder()
                 .url(OPENROUTER_URL)
@@ -135,18 +137,21 @@ public class GameMasterAI {
         });
     }
 
-    private String buildSystemPrompt(Party party) {
-        return "Tu es le Maître de Jeu d'un RPG spatial intergalactique appelé Cosmic Odyssey. " +
-                "Le jeu se déroule à travers l'univers et d'autres dimensions. " +
-                "Tu dois narrer de manière immersive, créer des descriptions visuelles riches, " +
-                "gérer les combats au tour par tour, et proposer des choix au joueur. " +
-                "Tu peux créer de nouveaux équipements, montures, vaisseaux, planètes et systèmes. " +
-                "Utilise un ton épique et mystérieux. " +
-                "Format de réponse JSON structuré avec: narration, choices (tableau), " +
-                "newItems (tableau d'objets), newPlanets (tableau), diceChecks (tableau), " +
-                "sceneImage (description pour image), voiceText (version courte pour TTS).";
+    private String buildSystemPrompt(Party party, Character character) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(ProgressionConfig.getSystemPrompt(character.getRace(), character.getLevel()));
+        sb.append(" Tu es le Maitre de Jeu d'un RPG spatial intergalactique appele Cosmic Odyssey. ");
+        sb.append("Le jeu se deroule a travers l'univers et d'autres dimensions. ");
+        sb.append("Tu dois narrer de maniere immersive, creer des descriptions visuelles riches, ");
+        sb.append("gerer les combats au tour par tour, et proposer des choix au joueur. ");
+        sb.append("Tu peux creer de nouveaux equipements, montures, vaisseaux, planetes et systemes. ");
+        sb.append("Utilise un ton epique et mysterieux. ");
+        sb.append("Format de reponse JSON structure avec: narration, choices (tableau), ");
+        sb.append("newItems (tableau d'objets), newPlanets (tableau), diceChecks (tableau), ");
+        sb.append("sceneImage (description pour image), voiceText (version courte pour TTS). ");
+        sb.append("Reponds en francais avec le format JSON demande.");
+        return sb.toString();
     }
-
     private String buildUserPrompt(Character character, String action, Party party) {
         StringBuilder sb = new StringBuilder();
         sb.append(character.getCharacterPrompt()).append("\\n");
@@ -339,6 +344,8 @@ public class GameMasterAI {
         public String description;
         public String successText;
         public String failText;
+        public int statModifier;
+        public String diceType;
     }
 
     public String generateMessageImageUrl(String messageText) {

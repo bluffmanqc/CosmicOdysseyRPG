@@ -84,7 +84,7 @@ public class GameSessionActivity extends AppCompatActivity {
             scrollToBottom();
         } else {
             addSystemMessage("Bienvenue dans Cosmic Odyssey, " + character.getName() + " !");
-            addSystemMessage("Tu te trouves sur " + party.getCurrentPlanet() + ", dans le système " + party.getCurrentSystem());
+            addSystemMessage("Tu te trouves sur " + party.getCurrentPlanet() + ", dans le systeme " + party.getCurrentSystem());
         }
     }
     private void loadOrCreateParty() {
@@ -95,7 +95,7 @@ public class GameSessionActivity extends AppCompatActivity {
             party = new Party();
             party.setName("Aventure Cosmique");
             party.setCurrentPlanet("Terra Novus");
-            party.setCurrentSystem("Système Sol Prime");
+            party.setCurrentSystem("Systeme Sol Prime");
             party.setHostId(character.getId());
             party.getPlayerIds().add(character.getId());
             dataManager.saveParty(party);
@@ -140,7 +140,7 @@ public class GameSessionActivity extends AppCompatActivity {
         inputText.setText("");
 
         if (!ai.hasApiKey()) {
-            addSystemMessage("Configure ta clé API OpenRouter dans Paramètres pour jouer avec le MJ IA.");
+            addSystemMessage("Configure ta cle API OpenRouter dans Parametres pour jouer avec le MJ IA.");
             return;
         }
 
@@ -153,7 +153,7 @@ public class GameSessionActivity extends AppCompatActivity {
             voiceText = response.narration;
         }
         addGMMessage(response.narration, voiceText);
-                    
+
                     if (response.sceneImage != null && !response.sceneImage.isEmpty()) {
                         String imageUrl = ai.generateSceneImageUrl(response.sceneImage);
                         loadSceneImage(imageUrl);
@@ -167,18 +167,26 @@ public class GameSessionActivity extends AppCompatActivity {
                         for (Equipment item : response.newItems) {
                             dataManager.addToCatalog(item);
                             party.getSharedEquipment().add(item);
-                            addSystemMessage("Nouvel objet découvert : " + item.getName() + " !");
+                            addSystemMessage("Nouvel objet decouvert : " + item.getName() + " !");
                         }
                     }
 
                     if (!response.newPlanets.isEmpty()) {
                         for (Planet planet : response.newPlanets) {
                             party.getDiscoveredPlanets().add(planet);
-                            addSystemMessage("Nouvelle planète découverte : " + planet.getName() + " !");
+                            addSystemMessage("Nouvelle planete decouverte : " + planet.getName() + " !");
                         }
                     }
 
                     party.getStoryHistory().add(response.narration);
+                        if (response.diceChecks != null && !response.diceChecks.isEmpty()) {
+                            for (GameMasterAI.DiceCheck check : response.diceChecks) {
+                                int roll = (int)(Math.random() * 20) + 1 + check.statModifier;
+                                boolean success = roll >= check.difficulty;
+                                String result = check.description + " : " + check.stat + " (" + roll + " vs " + check.difficulty + ") - " + (success ? check.successText : check.failText);
+                                addSystemMessage(result);
+                            }
+                        }
                     dataManager.saveParty(party);
                 });
             }
@@ -223,7 +231,7 @@ public class GameSessionActivity extends AppCompatActivity {
         GameMessage msg = new GameMessage();
         msg.setType(GameMessage.Type.SYSTEM);
         msg.setContent(content);
-        msg.setSender("Système");
+        msg.setSender("Systeme");
         messages.add(msg);
         messageAdapter.notifyItemInserted(messages.size() - 1);
         scrollToBottom();
@@ -261,15 +269,18 @@ public class GameSessionActivity extends AppCompatActivity {
         ttsEnabled = !ttsEnabled;
         voiceBtn.setImageResource(ttsEnabled ? R.drawable.ic_volume_on : R.drawable.ic_volume_off);
 
-        Toast.makeText(this, ttsEnabled ? "Voix activée" : "Voix désactivée", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, ttsEnabled ? "Voix activee" : "Voix desactivee", Toast.LENGTH_SHORT).show();
     }
     private void updatePlayButtonIcon(boolean hasPlayed) {
         playBtn.setImageResource(hasPlayed ? R.drawable.ic_replay : R.drawable.ic_play_arrow);
     }
 
     private void replayVoice() {
-        if (ttsEnabled && currentVoiceText != null) {
+        if (ttsEnabled && currentVoiceText != null && !currentVoiceText.isEmpty()) {
             CosmicOdysseyApp.getInstance().getTTSManager().speak(currentVoiceText);
+            updatePlayButtonIcon(true);
+        } else {
+            Toast.makeText(this, "Aucun texte a relire", Toast.LENGTH_SHORT).show();
         }
     }
     private void scrollToBottom() {

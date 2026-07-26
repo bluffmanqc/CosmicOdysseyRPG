@@ -26,6 +26,9 @@ public class ShopItem {
     private boolean available;
     @Ignore
     private Object item;
+    private int cargoCapacity;
+    private int speed;
+    private String armament;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -51,4 +54,10 @@ public class ShopItem {
     public void setAvailable(boolean available) { this.available = available; }
     public Object getItem() { return item; }
     public void setItem(Object item) { this.item = item; }
+    public int getCargoCapacity() { return cargoCapacity; }
+    public void setCargoCapacity(int cargoCapacity) { this.cargoCapacity = cargoCapacity; }
+    public int getSpeed() { return speed; }
+    public void setSpeed(int speed) { this.speed = speed; }
+    public String getArmament() { return armament; }
+    public void setArmament(String armament) { this.armament = armament; }
 }

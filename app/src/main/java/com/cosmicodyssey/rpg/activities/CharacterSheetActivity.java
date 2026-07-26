@@ -1,48 +1,36 @@
 package com.cosmicodyssey.rpg.activities;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import android.content.Intent;
-import com.cosmicodyssey.rpg.InventoryActivity;
 import com.cosmicodyssey.rpg.R;
 import com.cosmicodyssey.rpg.ai.GameMasterAI;
 import com.cosmicodyssey.rpg.data.DataManager;
 import com.cosmicodyssey.rpg.models.Character;
 import com.cosmicodyssey.rpg.models.Equipment;
+
 import java.net.URLEncoder;
+import java.util.List;
 
 public class CharacterSheetActivity extends AppCompatActivity {
-
     private ImageView avatarImage;
-    private TextView nameText;
-    private TextView raceClassText;
-    private TextView levelText;
-    private ProgressBar hpBar;
-    private ProgressBar shieldBar;
-    private ProgressBar energyBar;
-    private TextView hpText;
-    private TextView shieldText;
-    private TextView energyText;
-    private TextView creditsText;
-    private TextView strengthText;
-    private TextView dexterityText;
-    private TextView constitutionText;
-    private TextView intelligenceText;
-    private TextView wisdomText;
-    private TextView charismaText;
-    private TextView luckText;
-    private ImageView mountImage;
-    private ImageView shipImage;
-    private ImageView cargoImage;
-    private RecyclerView equipmentList;
+    private TextView nameText, raceClassText, levelText;
+    private TextView hpText, shieldText, energyText, creditsText;
+    private ProgressBar hpBar, shieldBar, energyBar;
+    private TextView strengthText, dexterityText, constitutionText;
+    private TextView intelligenceText, wisdomText, charismaText, luckText;
+    private LinearLayout equipmentList;
+    private Button inventoryBtn;
 
     private Character character;
     private DataManager dataManager;
@@ -55,15 +43,16 @@ public class CharacterSheetActivity extends AppCompatActivity {
 
         dataManager = new DataManager(this);
         ai = new GameMasterAI(this);
-        character = dataManager.loadCharacter();
 
+        character = dataManager.loadCharacter();
         if (character == null) {
+            startActivity(new Intent(this, CharacterCreationActivity.class));
             finish();
             return;
         }
 
         initViews();
-        displayCharacter();
+        updateUI();
     }
 
     private void initViews() {
@@ -85,33 +74,21 @@ public class CharacterSheetActivity extends AppCompatActivity {
         wisdomText = findViewById(R.id.wisdomText);
         charismaText = findViewById(R.id.charismaText);
         luckText = findViewById(R.id.luckText);
-        mountImage = findViewById(R.id.mountImage);
-        shipImage = findViewById(R.id.shipImage);
-        cargoImage = findViewById(R.id.cargoImage);
         equipmentList = findViewById(R.id.equipmentList);
+        inventoryBtn = findViewById(R.id.inventoryBtn);
+
+        inventoryBtn.setOnClickListener(v -> startActivity(new Intent(this, com.cosmicodyssey.rpg.InventoryActivity.class)));
     }
 
-    private void displayCharacter() {
+    private int getMod(int stat) {
+        return (stat - 10) / 2;
+    }
+
+    private void updateUI() {
         nameText.setText(character.getName());
         raceClassText.setText(character.getRace() + " | " + character.getClassName());
         levelText.setText("Niveau " + character.getLevel());
 
-        // Avatar avec mise à jour selon équipement
-        String avatarUrl = character.getAvatarUrl();
-        if (avatarUrl != null && !avatarUrl.isEmpty()) {
-            Glide.with(this).load(avatarUrl).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
-        } else {
-            avatarImage.setImageResource(R.drawable.ic_character_placeholder);
-        }
-        
-        // Bouton inventaire
-        findViewById(R.id.inventoryBtn).setOnClickListener(v -> {
-            Intent intent = new Intent(CharacterSheetActivity.this, InventoryActivity.class);
-            intent.putExtra("character_id", character.getId());
-            startActivity(intent);
-        });
-
-        // Stats bars
         hpBar.setMax(character.getMaxHitPoints());
         hpBar.setProgress(character.getHitPoints());
         hpText.setText(character.getHitPoints() + "/" + character.getMaxHitPoints());
@@ -124,82 +101,49 @@ public class CharacterSheetActivity extends AppCompatActivity {
         energyBar.setProgress(character.getEnergy());
         energyText.setText(character.getEnergy() + "/" + character.getMaxEnergy());
 
-        creditsText.setText("💰 " + character.getCredits() + " crédits");
+        creditsText.setText("💰 " + character.getCredits() + " credits");
 
-        // Character stats
-        strengthText.setText("FOR: " + character.getStats().getStrength() + " (" + character.getStats().getModifier(character.getStats().getStrength()) + ")");
-        dexterityText.setText("DEX: " + character.getStats().getDexterity() + " (" + character.getStats().getModifier(character.getStats().getDexterity()) + ")");
-        constitutionText.setText("CON: " + character.getStats().getConstitution() + " (" + character.getStats().getModifier(character.getStats().getConstitution()) + ")");
-        intelligenceText.setText("INT: " + character.getStats().getIntelligence() + " (" + character.getStats().getModifier(character.getStats().getIntelligence()) + ")");
-        wisdomText.setText("SAG: " + character.getStats().getWisdom() + " (" + character.getStats().getModifier(character.getStats().getWisdom()) + ")");
-        charismaText.setText("CHA: " + character.getStats().getCharisma() + " (" + character.getStats().getModifier(character.getStats().getCharisma()) + ")");
+        strengthText.setText("FOR: " + character.getStats().getStrength() + " (" + getMod(character.getStats().getStrength()) + ")");
+        dexterityText.setText("DEX: " + character.getStats().getDexterity() + " (" + getMod(character.getStats().getDexterity()) + ")");
+        constitutionText.setText("CON: " + character.getStats().getConstitution() + " (" + getMod(character.getStats().getConstitution()) + ")");
+        intelligenceText.setText("INT: " + character.getStats().getIntelligence() + " (" + getMod(character.getStats().getIntelligence()) + ")");
+        wisdomText.setText("SAG: " + character.getStats().getWisdom() + " (" + getMod(character.getStats().getWisdom()) + ")");
+        charismaText.setText("CHA: " + character.getStats().getCharisma() + " (" + getMod(character.getStats().getCharisma()) + ")");
         luckText.setText("LUCK: " + character.getStats().getLuck());
 
-        // Mount
-        if (character.getMount() != null) {
-            Glide.with(this)
-                    .load(character.getMount().getImageUrl())
-                    .placeholder(R.drawable.ic_mount_placeholder)
-                    .into(mountImage);
-        }
-
-        // Spaceship
-        if (character.getSpaceship() != null) {
-            Glide.with(this)
-                    .load(character.getSpaceship().getImageUrl())
-                    .placeholder(R.drawable.ic_ship_placeholder)
-                    .into(shipImage);
-        }
-
-        // Cargo
-        if (character.getCargo() != null) {
-            Glide.with(this)
-                    .load(character.getCargo().getImageUrl())
-                    .placeholder(R.drawable.ic_cargo_placeholder)
-                    .into(cargoImage);
-        }
-
-        // Equipment grid
-        equipmentList.setLayoutManager(new GridLayoutManager(this, 3));
-        equipmentList.setAdapter(new EquipmentAdapter(character.getEquipments()));
+        updateCharacterImage();
+        updateEquipmentList();
     }
 
-    class EquipmentAdapter extends RecyclerView.Adapter<EquipmentAdapter.ViewHolder> {
-        private java.util.List<Equipment> items;
-
-        EquipmentAdapter(java.util.List<Equipment> items) { this.items = items; }
-
-        @Override
-        public ViewHolder onCreateViewHolder(android.view.ViewGroup parent, int viewType) {
-            android.view.View view = getLayoutInflater().inflate(R.layout.item_equipment_slot, parent, false);
-            return new ViewHolder(view);
+    private void updateCharacterImage() {
+        if (character.getAvatarUrl() != null && !character.getAvatarUrl().isEmpty()) {
+            Glide.with(this).load(character.getAvatarUrl()).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
+            return;
         }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            Equipment item = items.get(position);
-            Glide.with(CharacterSheetActivity.this)
-                    .load(item.getImageUrl())
-                    .placeholder(R.drawable.ic_item_placeholder)
-                    .into(holder.imageView);
-            holder.rarityView.setBackgroundColor(item.getRarity().getColor());
-        }
-
-        @Override public int getItemCount() { return items.size(); }
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            ImageView imageView;
-            android.view.View rarityView;
-            ViewHolder(android.view.View itemView) {
-                super(itemView);
-                imageView = itemView.findViewById(R.id.equipmentImage);
-                rarityView = itemView.findViewById(R.id.rarityIndicator);
+        
+        boolean hasArmor = false;
+        for (Equipment e : character.getEquipments()) {
+            if (e.getType() != null && (e.getType().equalsIgnoreCase("Armure") || e.getType().equalsIgnoreCase("Chest"))) {
+                hasArmor = true;
+                break;
             }
         }
-    }
-
-    
-    private void updateCharacterImage() {
+        
+        if (character.getLevel() == 1 && !hasArmor) {
+            String basePrompt = "sci-fi character portrait, " + character.getRace() + " " + character.getClassName() + 
+                    ", " + character.getName() + ", wearing basic underclothes and simple cloth, no armor, no weapons, " +
+                    "space station interior background, digital art, high quality";
+            String encodedPrompt;
+            try {
+                encodedPrompt = URLEncoder.encode(basePrompt, "UTF-8");
+            } catch (Exception e) {
+                encodedPrompt = basePrompt;
+            }
+            String imageUrl = "https://image.pollinations.ai/prompt/" + encodedPrompt + "?width=512&height=512&nologo=true";
+            Glide.with(this).load(imageUrl).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
+            return;
+        }
+        
         String prompt = character.generateImagePrompt();
         String encodedPrompt;
         try {
@@ -207,20 +151,37 @@ public class CharacterSheetActivity extends AppCompatActivity {
         } catch (Exception e) {
             encodedPrompt = prompt;
         }
-        
         String imageUrl = "https://image.pollinations.ai/prompt/" + encodedPrompt + "?width=512&height=512&nologo=true";
-        
-        // Afficher l'image
-        Glide.with(this).load(imageUrl).into(avatarImage);
+        Glide.with(this).load(imageUrl).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
     }
-    
 
-    private void onItemAdded() {
-        updateCharacterImage();
+    private void updateEquipmentList() {
+        equipmentList.removeAllViews();
+        List<Equipment> equipments = character.getEquipments();
+        if (equipments.isEmpty()) {
+            TextView empty = new TextView(this);
+            empty.setText("Aucun equipement");
+            empty.setTextColor(Color.parseColor("#888888"));
+            empty.setTextSize(14);
+            equipmentList.addView(empty);
+            return;
+        }
+        for (Equipment e : equipments) {
+            TextView tv = new TextView(this);
+            tv.setText("• " + e.getName() + " (" + e.getType() + ")");
+            tv.setTextColor(Color.parseColor("#FFFFFF"));
+            tv.setTextSize(14);
+            tv.setPadding(0, 4, 0, 4);
+            equipmentList.addView(tv);
+        }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        updateCharacterImage();
+        character = dataManager.loadCharacter();
+        if (character != null) {
+            updateUI();
+        }
     }
 }
