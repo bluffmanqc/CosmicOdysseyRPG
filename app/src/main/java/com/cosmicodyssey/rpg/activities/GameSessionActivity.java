@@ -73,10 +73,20 @@ public class GameSessionActivity extends AppCompatActivity {
         loadOrCreateParty();
         initViews();
         setupButtons();
-        addSystemMessage("Bienvenue dans Cosmic Odyssey, " + character.getName() + " !");
-        addSystemMessage("Tu te trouves sur " + party.getCurrentPlanet() + ", dans le système " + party.getCurrentSystem());
+        if (party.getStoryHistory() != null && !party.getStoryHistory().isEmpty()) {
+            for (String storyText : party.getStoryHistory()) {
+                GameMessage msg = new GameMessage();
+                msg.setType(GameMessage.Type.NARRATION);
+                msg.setContent(storyText);
+                messages.add(msg);
+            }
+            messageAdapter.notifyDataSetChanged();
+            scrollToBottom();
+        } else {
+            addSystemMessage("Bienvenue dans Cosmic Odyssey, " + character.getName() + " !");
+            addSystemMessage("Tu te trouves sur " + party.getCurrentPlanet() + ", dans le système " + party.getCurrentSystem());
+        }
     }
-
     private void loadOrCreateParty() {
         List<Party> parties = dataManager.loadParties();
         if (!parties.isEmpty()) {

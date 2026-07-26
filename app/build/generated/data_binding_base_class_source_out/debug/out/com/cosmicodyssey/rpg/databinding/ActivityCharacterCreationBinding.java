@@ -78,6 +78,9 @@ public final class ActivityCharacterCreationBinding implements ViewBinding {
   public final EditText nameInput;
 
   @NonNull
+  public final TextView pointsRemainingValue;
+
+  @NonNull
   public final Spinner raceSpinner;
 
   @NonNull
@@ -112,9 +115,9 @@ public final class ActivityCharacterCreationBinding implements ViewBinding {
       @NonNull Button createBtn, @NonNull SeekBar dexterityBar, @NonNull TextView dexterityValue,
       @NonNull Button generateAvatarBtn, @NonNull SeekBar intelligenceBar,
       @NonNull TextView intelligenceValue, @NonNull SeekBar luckBar, @NonNull TextView luckValue,
-      @NonNull EditText nameInput, @NonNull Spinner raceSpinner, @NonNull RadioButton radioAI,
-      @NonNull RadioButton radioUpload, @NonNull SeekBar strengthBar,
-      @NonNull TextView strengthValue, @NonNull Button takePhotoBtn,
+      @NonNull EditText nameInput, @NonNull TextView pointsRemainingValue,
+      @NonNull Spinner raceSpinner, @NonNull RadioButton radioAI, @NonNull RadioButton radioUpload,
+      @NonNull SeekBar strengthBar, @NonNull TextView strengthValue, @NonNull Button takePhotoBtn,
       @NonNull Button uploadAvatarBtn, @NonNull SeekBar wisdomBar, @NonNull TextView wisdomValue) {
     this.rootView = rootView;
     this.avatarImage = avatarImage;
@@ -134,6 +137,7 @@ public final class ActivityCharacterCreationBinding implements ViewBinding {
     this.luckBar = luckBar;
     this.luckValue = luckValue;
     this.nameInput = nameInput;
+    this.pointsRemainingValue = pointsRemainingValue;
     this.raceSpinner = raceSpinner;
     this.radioAI = radioAI;
     this.radioUpload = radioUpload;
@@ -274,6 +278,12 @@ public final class ActivityCharacterCreationBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.pointsRemainingValue;
+      TextView pointsRemainingValue = ViewBindings.findChildViewById(rootView, id);
+      if (pointsRemainingValue == null) {
+        break missingId;
+      }
+
       id = R.id.raceSpinner;
       Spinner raceSpinner = ViewBindings.findChildViewById(rootView, id);
       if (raceSpinner == null) {
@@ -332,8 +342,8 @@ public final class ActivityCharacterCreationBinding implements ViewBinding {
           avatarTypeGroup, backgroundSpinner, charismaBar, charismaValue, classSpinner,
           constitutionBar, constitutionValue, createBtn, dexterityBar, dexterityValue,
           generateAvatarBtn, intelligenceBar, intelligenceValue, luckBar, luckValue, nameInput,
-          raceSpinner, radioAI, radioUpload, strengthBar, strengthValue, takePhotoBtn,
-          uploadAvatarBtn, wisdomBar, wisdomValue);
+          pointsRemainingValue, raceSpinner, radioAI, radioUpload, strengthBar, strengthValue,
+          takePhotoBtn, uploadAvatarBtn, wisdomBar, wisdomValue);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

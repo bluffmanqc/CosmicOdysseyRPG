@@ -32,6 +32,8 @@ import java.io.File;
 public class CharacterCreationActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     private static final int TAKE_PHOTO = 101;
+    private static final int MAX_STAT = 18;
+    private static final int TOTAL_POINTS = 15;
 
     private ImageView avatarImage;
     private EditText nameInput;
@@ -52,17 +54,26 @@ public class CharacterCreationActivity extends AppCompatActivity {
     private TextView wisdomValue;
     private TextView charismaValue;
     private TextView luckValue;
-    private RadioGroup avatarTypeGroup;
+    private TextView pointsRemainingValue;
+    private Button createBtn;
     private Button generateAvatarBtn;
     private Button uploadAvatarBtn;
     private Button takePhotoBtn;
-    private Button createBtn;
+    private RadioGroup avatarTypeGroup;
+    private RadioButton aiAvatarRadio;
+    private RadioButton customAvatarRadio;
 
     private Character character;
     private GameMasterAI ai;
-    private DataManager dataManager;
-    private String customAvatarPath = null;
-    private String aiAvatarUrl = null;
+    private String customAvatarPath;
+    private String aiAvatarUrl;
+    private boolean isCustomAvatar = false;
+
+    private int[] baseStats = new int[7];
+    private int[] allocatedPoints = new int[7];
+    private int pointsRemaining = TOTAL_POINTS;
+
+    private static final String[] STAT_NAMES = {"FOR", "DEX", "CON", "INT", "SAG", "CHA", "LUC"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,15 +82,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
 
         character = new Character();
         ai = new GameMasterAI(this);
-        dataManager = new DataManager(this);
 
-        initViews();
-        setupSpinners();
-        setupSeekBars();
-        setupButtons();
-    }
-
-    private void initViews() {
         avatarImage = findViewById(R.id.avatarImage);
         nameInput = findViewById(R.id.nameInput);
         raceSpinner = findViewById(R.id.raceSpinner);
@@ -99,11 +102,19 @@ public class CharacterCreationActivity extends AppCompatActivity {
         wisdomValue = findViewById(R.id.wisdomValue);
         charismaValue = findViewById(R.id.charismaValue);
         luckValue = findViewById(R.id.luckValue);
-        avatarTypeGroup = findViewById(R.id.avatarTypeGroup);
+        pointsRemainingValue = findViewById(R.id.pointsRemainingValue);
+        createBtn = findViewById(R.id.createBtn);
         generateAvatarBtn = findViewById(R.id.generateAvatarBtn);
         uploadAvatarBtn = findViewById(R.id.uploadAvatarBtn);
         takePhotoBtn = findViewById(R.id.takePhotoBtn);
-        createBtn = findViewById(R.id.createBtn);
+        avatarTypeGroup = findViewById(R.id.avatarTypeGroup);
+
+        setupSpinners();
+        setupSeekBars();
+        setupButtons();
+
+        applyBaseStats("Humain", "Pilote");
+        updatePointsDisplay();
     }
 
     private void setupSpinners() {
@@ -112,6 +123,9 @@ public class CharacterCreationActivity extends AppCompatActivity {
         String[] backgrounds = {"Vétéran de guerre", "Scientifique", "Criminel", "Noble", "Réfugié", "Archéologue"};
 
         raceSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, races));
+        classSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, classes));
+        backgroundSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, backgrounds));
+
         raceSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
@@ -120,7 +134,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
-        classSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, classes));
+
         classSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
@@ -129,50 +143,171 @@ public class CharacterCreationActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
-        backgroundSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, backgrounds));
     }
 
     private void setupSeekBars() {
-        setupStatBar(strengthBar, strengthValue, "FOR");
-        setupStatBar(dexterityBar, dexterityValue, "DEX");
-        setupStatBar(constitutionBar, constitutionValue, "CON");
-        setupStatBar(intelligenceBar, intelligenceValue, "INT");
-        setupStatBar(wisdomBar, wisdomValue, "SAG");
-        setupStatBar(charismaBar, charismaValue, "CHA");
-        setupStatBar(luckBar, luckValue, "LUCK");
+        SeekBar[] bars = {strengthBar, dexterityBar, constitutionBar, intelligenceBar, wisdomBar, charismaBar, luckBar};
+        for (int i = 0; i < bars.length; i++) {
+            final int idx = i;
+            bars[i].setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (!fromUser) return;
+                    int base = baseStats[idx];
+                    int currentAllocated = progress - base;
+                    if (currentAllocated < 0) currentAllocated = 0;
+                    
+                    int otherAllocated = 0;
+                    for (int j = 0; j < 7; j++) {
+                        if (j != idx) otherAllocated += allocatedPoints[j];
+                    }
+                    
+                    if (currentAllocated + otherAllocated > TOTAL_POINTS) {
+                        currentAllocated = TOTAL_POINTS - otherAllocated;
+                        if (currentAllocated < 0) currentAllocated = 0;
+                    }
+                    
+                    if (base + currentAllocated > MAX_STAT) {
+                        currentAllocated = MAX_STAT - base;
+                    }
+                    
+                    allocatedPoints[idx] = currentAllocated;
+                    seekBar.setProgress(base + currentAllocated);
+                    updateStatValues();
+                    updatePointsDisplay();
+                }
+                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
     }
 
-    private void setupStatBar(SeekBar bar, TextView valueText, String statName) {
-        bar.setMax(20);
-        bar.setProgress(10);
-        valueText.setText(statName + ": 10");
-        bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                valueText.setText(statName + ": " + progress);
-            }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+    private void updatePointsDisplay() {
+        int used = 0;
+        for (int p : allocatedPoints) used += p;
+        pointsRemaining = TOTAL_POINTS - used;
+        pointsRemainingValue.setText("Points restants: " + pointsRemaining);
+        if (pointsRemaining < 0) {
+            pointsRemainingValue.setTextColor(0xFFFF4444);
+        } else {
+            pointsRemainingValue.setTextColor(0xFF00FF88);
+        }
+    }
+
+    private void applyBaseStats(String race, String className) {
+        int[] newBase = {10, 10, 10, 10, 10, 10, 10};
+
+        switch (race) {
+            case "Humain": break;
+            case "Xylarien": newBase[0]=8; newBase[1]=14; newBase[2]=8; newBase[3]=12; newBase[4]=12; newBase[5]=10; newBase[6]=10; break;
+            case "Néo-Machine": newBase[0]=12; newBase[1]=8; newBase[2]=14; newBase[3]=12; newBase[4]=8; newBase[5]=6; newBase[6]=8; break;
+            case "Vorak": newBase[0]=16; newBase[1]=6; newBase[2]=14; newBase[3]=6; newBase[4]=8; newBase[5]=6; newBase[6]=12; break;
+            case "Etherean": newBase[0]=6; newBase[1]=10; newBase[2]=8; newBase[3]=16; newBase[4]=14; newBase[5]=12; newBase[6]=10; break;
+            case "Draconien": newBase[0]=14; newBase[1]=8; newBase[2]=12; newBase[3]=10; newBase[4]=10; newBase[5]=12; newBase[6]=8; break;
+        }
+
+        switch (className) {
+            case "Pilote": newBase[1]+=2; newBase[4]+=1; break;
+            case "Psionique": newBase[3]+=2; newBase[5]+=1; break;
+            case "Ingénieur": newBase[2]+=1; newBase[3]+=2; break;
+            case "Mercenaire": newBase[0]+=2; newBase[2]+=1; break;
+            case "Explorateur": newBase[1]+=2; newBase[4]+=1; break;
+            case "Marchand": newBase[5]+=2; newBase[6]+=1; break;
+        }
+
+        for (int i = 0; i < 7; i++) {
+            if (newBase[i] > MAX_STAT) newBase[i] = MAX_STAT;
+            baseStats[i] = newBase[i];
+        }
+
+        for (int i = 0; i < 7; i++) {
+            allocatedPoints[i] = 0;
+        }
+        pointsRemaining = TOTAL_POINTS;
+
+        strengthBar.setProgress(baseStats[0]);
+        dexterityBar.setProgress(baseStats[1]);
+        constitutionBar.setProgress(baseStats[2]);
+        intelligenceBar.setProgress(baseStats[3]);
+        wisdomBar.setProgress(baseStats[4]);
+        charismaBar.setProgress(baseStats[5]);
+        luckBar.setProgress(baseStats[6]);
+
+        updateStatValues();
+        updatePointsDisplay();
+    }
+
+    private void updateStatValues() {
+        strengthValue.setText("FOR: " + strengthBar.getProgress() + " (base: " + baseStats[0] + ")");
+        dexterityValue.setText("DEX: " + dexterityBar.getProgress() + " (base: " + baseStats[1] + ")");
+        constitutionValue.setText("CON: " + constitutionBar.getProgress() + " (base: " + baseStats[2] + ")");
+        intelligenceValue.setText("INT: " + intelligenceBar.getProgress() + " (base: " + baseStats[3] + ")");
+        wisdomValue.setText("SAG: " + wisdomBar.getProgress() + " (base: " + baseStats[4] + ")");
+        charismaValue.setText("CHA: " + charismaBar.getProgress() + " (base: " + baseStats[5] + ")");
+        luckValue.setText("LUC: " + luckBar.getProgress() + " (base: " + baseStats[6] + ")");
     }
 
     private void setupButtons() {
+        createBtn.setOnClickListener(v -> createCharacter());
         generateAvatarBtn.setOnClickListener(v -> generateAIAvatar());
         uploadAvatarBtn.setOnClickListener(v -> pickImageFromGallery());
         takePhotoBtn.setOnClickListener(v -> takePhoto());
+    }
 
-        avatarTypeGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.radioAI) {
-                generateAvatarBtn.setEnabled(true);
-            } else {
-                generateAvatarBtn.setEnabled(false);
-            }
-        });
+    private void createCharacter() {
+        String name = nameInput.getText().toString().trim();
+        if (name.isEmpty()) {
+            Toast.makeText(this, "Entre un nom !", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        createBtn.setOnClickListener(v -> createCharacter());
+        if (pointsRemaining < 0) {
+            Toast.makeText(this, "Trop de points alloués !", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (character.getAvatarUrl() == null) {
+            new AlertDialog.Builder(this)
+                .setTitle("Pas d'avatar")
+                .setMessage("Générer un avatar IA automatiquement ?")
+                .setPositiveButton("Oui", (dialog, which) -> {
+                    generateAIAvatar();
+                    saveAndContinue(name);
+                })
+                .setNegativeButton("Non", null)
+                .show();
+            return;
+        }
+
+        saveAndContinue(name);
+    }
+
+    private void saveAndContinue(String name) {
+        character.setName(name);
+        character.setRace(raceSpinner.getSelectedItem().toString());
+        character.setClassName(classSpinner.getSelectedItem().toString());
+        character.setBackground(backgroundSpinner.getSelectedItem().toString());
+
+        CharacterStats stats = new CharacterStats();
+        stats.setStrength(strengthBar.getProgress());
+        stats.setDexterity(dexterityBar.getProgress());
+        stats.setConstitution(constitutionBar.getProgress());
+        stats.setIntelligence(intelligenceBar.getProgress());
+        stats.setWisdom(wisdomBar.getProgress());
+        stats.setCharisma(charismaBar.getProgress());
+        stats.setLuck(luckBar.getProgress());
+        character.setStats(stats);
+
+        new DataManager(this).saveCharacter(character);
+
+        Intent intent = new Intent(this, CharacterSheetActivity.class);
+        intent.putExtra("character_id", character.getId());
+        startActivity(intent);
+        finish();
     }
 
     private void generateAIAvatar() {
-        character.setName(nameInput.getText().toString());
+        character.setName(nameInput.getText().toString().trim());
         character.setRace(raceSpinner.getSelectedItem().toString());
         character.setClassName(classSpinner.getSelectedItem().toString());
 
@@ -181,9 +316,9 @@ public class CharacterCreationActivity extends AppCompatActivity {
         character.setAvatarType("ai");
 
         Glide.with(this)
-                .load(aiAvatarUrl)
-                .placeholder(R.drawable.ic_character_placeholder)
-                .into(avatarImage);
+            .load(aiAvatarUrl)
+            .placeholder(R.drawable.ic_character_placeholder)
+            .into(avatarImage);
 
         Toast.makeText(this, "Avatar IA généré !", Toast.LENGTH_SHORT).show();
     }
@@ -208,7 +343,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == PICK_IMAGE && data != null) {
                 Uri selectedImage = data.getData();
-                customAvatarPath = ImageUtils.copyUriToInternalStorage(this, selectedImage, "avatar_" + System.currentTimeMillis() + ".jpg");
+                customAvatarPath = selectedImage.toString();
                 character.setAvatarUrl(customAvatarPath);
                 character.setAvatarType("custom");
                 Glide.with(this).load(customAvatarPath).into(avatarImage);
@@ -219,98 +354,4 @@ public class CharacterCreationActivity extends AppCompatActivity {
             }
         }
     }
-
-    private void createCharacter() {
-        String name = nameInput.getText().toString().trim();
-        if (name.isEmpty()) {
-            Toast.makeText(this, "Entre un nom !", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (character.getAvatarUrl() == null) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Pas d'avatar")
-                    .setMessage("Générer un avatar IA automatiquement ?")
-                    .setPositiveButton("Oui", (dialog, which) -> {
-                        generateAIAvatar();
-                        saveAndContinue(name);
-                    })
-                    .setNegativeButton("Non", null)
-                    .show();
-            return;
-        }
-
-        saveAndContinue(name);
-    }
-
-    private void saveAndContinue(String name) {
-        character.setName(name);
-        character.setRace(raceSpinner.getSelectedItem().toString());
-        character.setClassName(classSpinner.getSelectedItem().toString());
-        character.setBackground(backgroundSpinner.getSelectedItem().toString());
-
-        CharacterStats stats = new CharacterStats();
-        stats.setStrength(strengthBar.getProgress());
-        stats.setDexterity(dexterityBar.getProgress());
-        stats.setConstitution(constitutionBar.getProgress());
-        stats.setIntelligence(intelligenceBar.getProgress());
-        stats.setWisdom(wisdomBar.getProgress());
-        stats.setCharisma(charismaBar.getProgress());
-        stats.setLuck(luckBar.getProgress());
-        character.setStats(stats);
-
-        dataManager.saveCharacter(character);
-
-        Intent intent = new Intent(this, GameSessionActivity.class);
-        intent.putExtra("character_id", character.getId());
-        startActivity(intent);
-        finish();
-    }
-
-    // Applique les stats de base selon la classe et la race choisies
-    private void applyBaseStats(String race, String className) {
-        int[] baseStats = new int[6]; // STR, DEX, CON, INT, WIS, CHA
-        
-        // Stats de base par race
-        switch(race) {
-            case "Humain": baseStats = new int[]{12,12,12,12,12,12}; break;
-            case "Xylarien": baseStats = new int[]{10,14,10,14,12,10}; break;
-            case "Néo-Machine": baseStats = new int[]{14,10,14,12,10,10}; break;
-            case "Vorak": baseStats = new int[]{16,10,14,8,10,8}; break;
-            case "Etherean": baseStats = new int[]{8,12,10,16,14,12}; break;
-            case "Draconien": baseStats = new int[]{14,12,14,10,10,12}; break;
-            default: baseStats = new int[]{10,10,10,10,10,10}; break;
-        }
-        
-        // Bonus de classe
-        switch(className) {
-            case "Soldat": baseStats[0]+=2; baseStats[2]+=2; break;
-            case "Pilote": baseStats[1]+=2; baseStats[5]+=2; break;
-            case "Ingénieur": baseStats[2]+=2; baseStats[3]+=2; break;
-            case "Scientifique": baseStats[3]+=2; baseStats[4]+=2; break;
-            case "Médecin": baseStats[4]+=2; baseStats[5]+=2; break;
-            case "Marchand": baseStats[5]+=3; break;
-            case "Hacker": baseStats[1]+=2; baseStats[3]+=2; break;
-            case "Explorateur": baseStats[1]+=2; baseStats[4]+=2; break;
-        }
-        
-        strengthBar.setProgress(baseStats[0]);
-        dexterityBar.setProgress(baseStats[1]);
-        constitutionBar.setProgress(baseStats[2]);
-        intelligenceBar.setProgress(baseStats[3]);
-        wisdomBar.setProgress(baseStats[4]);
-        charismaBar.setProgress(baseStats[5]);
-        
-        updateStatValues();
-    }
-    
-    private void updateStatValues() {
-        strengthValue.setText(String.valueOf(strengthBar.getProgress()));
-        dexterityValue.setText(String.valueOf(dexterityBar.getProgress()));
-        constitutionValue.setText(String.valueOf(constitutionBar.getProgress()));
-        intelligenceValue.setText(String.valueOf(intelligenceBar.getProgress()));
-        wisdomValue.setText(String.valueOf(wisdomBar.getProgress()));
-        charismaValue.setText(String.valueOf(charismaBar.getProgress()));
-    }
-
 }

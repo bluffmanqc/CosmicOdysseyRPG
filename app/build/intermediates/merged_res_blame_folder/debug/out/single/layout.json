@@ -48,6 +48,10 @@
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_shop.xml"
     },
     {
+        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_character_creation.xml",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_character_creation.xml"
+    },
+    {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/item_message.xml",
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/item_message.xml"
     },
@@ -58,10 +62,6 @@
     {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_game_session.xml",
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_game_session.xml"
-    },
-    {
-        "merged": "com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_game_session.xml",
-        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_game_session.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-mergeDebugResources-47:/layout/activity_main.xml",

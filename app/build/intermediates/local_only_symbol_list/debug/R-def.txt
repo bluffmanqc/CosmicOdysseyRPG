@@ -151,6 +151,7 @@ id partyNameInput
 id partyPlayers
 id playBtn
 id playVoiceBtn
+id pointsRemainingValue
 id prevPageBtn
 id priceText
 id raceClassText

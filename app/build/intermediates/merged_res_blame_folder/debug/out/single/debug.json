@@ -20,10 +20,6 @@
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/drawable/bg_item_common.xml"
     },
     {
-        "merged": "com.cosmicodyssey.rpg.app-merged_res-48:/drawable_ic_play_arrow.xml.flat",
-        "source": "com.cosmicodyssey.rpg.app-main-50:/drawable/ic_play_arrow.xml"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-merged_res-48:/drawable_edit_text_bg.xml.flat",
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/drawable/edit_text_bg.xml"
     },
@@ -108,8 +104,8 @@
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/drawable/bg_message_gm.xml"
     },
     {
-        "merged": "com.cosmicodyssey.rpg.app-merged_res-48:/drawable_ic_replay.xml.flat",
-        "source": "com.cosmicodyssey.rpg.app-main-50:/drawable/ic_replay.xml"
+        "merged": "com.cosmicodyssey.rpg.app-merged_res-48:/layout_activity_character_creation.xml.flat",
+        "source": "com.cosmicodyssey.rpg.app-main-50:/layout/activity_character_creation.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-merged_res-48:/drawable_ic_ship_placeholder.xml.flat",
@@ -228,6 +224,10 @@
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/layout/activity_splash.xml"
     },
     {
+        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-merged_res-48:/drawable_ic_replay.xml.flat",
+        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/drawable/ic_replay.xml"
+    },
+    {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-merged_res-48:/drawable_gradient_sheet_overlay.xml.flat",
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/drawable/gradient_sheet_overlay.xml"
     },
@@ -242,6 +242,10 @@
     {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-merged_res-48:/drawable_ic_launcher_foreground.xml.flat",
         "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-merged_res-48:/drawable_ic_play_arrow.xml.flat",
+        "source": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-main-50:/drawable/ic_play_arrow.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.2/com.cosmicodyssey.rpg.app-merged_res-48:/drawable_bg_item_legendary.xml.flat",

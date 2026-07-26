@@ -3682,6 +3682,7 @@ id percent
 id pin
 id playBtn
 id playVoiceBtn
+id pointsRemainingValue
 id pooling_container_listener_holder_tag
 id position
 id postLayout
