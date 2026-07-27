@@ -7,3 +7,16 @@ app/build/
 local.properties
 .idea/
 *.iml
+
+# Fichiers sensibles
+*.apk
+*.aab
+*.keystore
+*.jks
+*.p12
+
+# Build
+.gradle/
+build/
+app/build/
+local.properties
