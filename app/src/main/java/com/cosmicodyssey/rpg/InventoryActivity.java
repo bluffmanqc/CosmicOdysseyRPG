@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.view.Gravity;
 import java.util.List;
 import java.util.ArrayList;
+import com.cosmicodyssey.rpg.models.Equipment;
+import com.cosmicodyssey.rpg.data.DataManager;
+import com.cosmicodyssey.rpg.activities.MainActivity;
 
 public class InventoryActivity extends Activity {
     private DataManager dataManager;
@@ -45,11 +48,11 @@ public class InventoryActivity extends Activity {
     }
 
     private void loadInventory() {
-        addSection("⚔️ ARMES", "#FF6B6B", getWeapons());
-        addSection("🛡️ ARMURES", "#4ECDC4", getArmors());
-        addSection("👑 CASQUES", "#FFE66D", getHelmets());
-        addSection("👢 BOTTES", "#A8E6CF", getBoots());
-        addSection("💍 ACCESSOIRES", "#FF8B94", getAccessories());
+        addSection(" ARMES", "#FF6B6B", getWeapons());
+        addSection(" ARMURES", "#4ECDC4", getArmors());
+        addSection(" CASQUES", "#FFE66D", getHelmets());
+        addSection(" BOTTES", "#A8E6CF", getBoots());
+        addSection(" ACCESSOIRES", "#FF8B94", getAccessories());
         addBackButton();
     }
 
@@ -78,17 +81,17 @@ public class InventoryActivity extends Activity {
         item.setPadding(20, 15, 20, 15);
         item.setBackgroundColor(Color.parseColor("#1A1A2E"));
         TextView txt = new TextView(this);
-        txt.setText("⚡ " + eq.getName() + "\nNiveau: " + eq.getLevel() + " | Puissance: " + eq.getPower());
+        txt.setText(" " + eq.getName() + "\n" + eq.getDescription());
         txt.setTextColor(Color.WHITE);
         txt.setTextSize(14);
         txt.setPadding(15, 10, 15, 10);
         txt.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
         Button btn = new Button(this);
-        btn.setText("Équiper");
+        btn.setText("Détails");
         btn.setBackgroundColor(Color.parseColor("#00FF88"));
         btn.setTextColor(Color.BLACK);
         btn.setPadding(30, 15, 30, 15);
-        btn.setOnClickListener(v -> { dataManager.equipItem(eq, eq.getType()); android.widget.Toast.makeText(this, eq.getName() + " équipé!", android.widget.Toast.LENGTH_SHORT).show(); });
+        btn.setOnClickListener(v -> { android.widget.Toast.makeText(this, eq.getName(), android.widget.Toast.LENGTH_SHORT).show(); });
         item.addView(txt);
         item.addView(btn);
         layout.addView(item);
@@ -96,7 +99,7 @@ public class InventoryActivity extends Activity {
 
     private void addBackButton() {
         Button back = new Button(this);
-        back.setText("⬅️ Retour");
+        back.setText(" Retour");
         back.setBackgroundColor(Color.parseColor("#FF6B6B"));
         back.setTextColor(Color.WHITE);
         back.setPadding(40, 20, 40, 20);
