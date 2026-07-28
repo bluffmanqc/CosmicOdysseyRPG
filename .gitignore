@@ -1,22 +1,31 @@
-*.keystore
-*.jks
-*.apk
-*.aab
-app/build/
-.gradle/
-local.properties
-.idea/
-*.iml
-
-# Fichiers sensibles
-*.apk
-*.aab
-*.keystore
-*.jks
-*.p12
-
-# Build
+# Gradle
 .gradle/
 build/
-app/build/
+*/build/
+gradle-app.setting
+
+# Local config
 local.properties
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# APK / signing
+*.apk
+*.ap_
+*.aab
+*.idsig
+*.jks
+*.keystore
+*.pepk
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Captures
+captures/
