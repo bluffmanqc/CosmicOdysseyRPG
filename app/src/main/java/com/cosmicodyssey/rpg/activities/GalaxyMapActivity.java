@@ -1,22 +1,21 @@
 package com.cosmicodyssey.rpg.activities;
 
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.cosmicodyssey.rpg.R;
-import com.cosmicodyssey.rpg.ai.GameMasterAI;
 import com.cosmicodyssey.rpg.data.DataManager;
+import com.cosmicodyssey.rpg.models.Party;
 import com.cosmicodyssey.rpg.models.Planet;
 import com.cosmicodyssey.rpg.models.StarSystem;
 
@@ -25,13 +24,17 @@ import java.util.List;
 import java.util.Random;
 
 public class GalaxyMapActivity extends AppCompatActivity {
-    private FrameLayout mapContainer;
-    private TextView systemInfo;
     private GalaxyMapView mapView;
+    private TextView systemInfoText;
+    private Button travelBtn;
+    private Button scanBtn;
+    private Button backBtn;
+
+    private Party party;
     private DataManager dataManager;
-    private GameMasterAI ai;
     private List<StarSystem> systems;
     private StarSystem selectedSystem;
+    private Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,71 +42,112 @@ public class GalaxyMapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_galaxy_map);
 
         dataManager = new DataManager(this);
-        ai = new GameMasterAI(this);
-        mapContainer = findViewById(R.id.mapContainer);
-        systemInfo = findViewById(R.id.systemInfo);
-
-        systems = generateGalaxy();
-        mapView = new GalaxyMapView(this, systems);
-        mapContainer.addView(mapView);
-
-        findViewById(R.id.travelBtn).setOnClickListener(v -> travelToSelected());
-        findViewById(R.id.scanBtn).setOnClickListener(v -> scanSystem());
-    }
-
-    private List<StarSystem> generateGalaxy() {
-        List<StarSystem> list = new ArrayList<>();
-        Random random = new Random();
-        
-        String[] starTypes = {"G-Type", "Red Giant", "Blue Supergiant", "White Dwarf", "Neutron Star", "Black Hole"};
-        String[] factions = {"Fédération Galactique", "Empire Vorak", "Corporation Nexus", "Clans Libres", "Inconnue"};
-
-        for (int i = 0; i < 50; i++) {
-            StarSystem sys = new StarSystem();
-            sys.setName(generateSystemName(random));
-            sys.setStarType(starTypes[random.nextInt(starTypes.length)]);
-            sys.setX(random.nextDouble() * 2000 - 1000);
-            sys.setY(random.nextDouble() * 2000 - 1000);
-            sys.setFaction(factions[random.nextInt(factions.length)]);
-            sys.setThreatLevel(random.nextInt(10) + 1);
-            sys.setDiscovered(i < 5);
-
-            int planetCount = random.nextInt(5) + 1;
-            for (int p = 0; p < planetCount; p++) {
-                Planet planet = new Planet();
-                planet.setName(sys.getName() + " " + (p + 1));
-                planet.setSystemId(sys.getId());
-                String[] biomes = {"Désert", "Jungle", "Glace", "Volcanique", "Océan", "Forêt", "Ruines"};
-                planet.setBiome(biomes[random.nextInt(biomes.length)]);
-                planet.setDangerLevel(random.nextInt(10) + 1);
-                planet.setDiscovered(sys.isDiscovered());
-                sys.getPlanets().add(planet);
-            }
-
-            list.add(sys);
+        party = dataManager.loadParties().isEmpty() ? null : dataManager.loadParties().get(0);
+        if (party == null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
         }
 
-        list.get(0).setDiscovered(true);
-        list.get(0).setConnected(true);
-        return list;
+        random = new Random();
+        systems = generateSystems();
+
+        mapView = findViewById(R.id.mapView);
+        systemInfoText = findViewById(R.id.systemInfoText);
+        travelBtn = findViewById(R.id.travelBtn);
+        scanBtn = findViewById(R.id.scanBtn);
+        backBtn = findViewById(R.id.backBtn);
+
+        mapView.setSystems(systems, party.getCurrentSystem());
+
+        travelBtn.setOnClickListener(v -> travelToSystem());
+        scanBtn.setOnClickListener(v -> scanSystem());
+        backBtn.setOnClickListener(v -> finish());
+
+        mapView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                float x = event.getX();
+                float y = event.getY();
+                for (StarSystem system : systems) {
+                    float dx = x - system.getX();
+                    float dy = y - system.getY();
+                    if (Math.sqrt(dx * dx + dy * dy) < 30) {
+                        selectedSystem = system;
+                        updateSystemInfo();
+                        mapView.setSelectedSystem(system);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
     }
 
-    private String generateSystemName(Random random) {
-        String[] prefixes = {"Alpha", "Beta", "Gamma", "Delta", "Omega", "Neo", "Xeno", "Hyper"};
-        String[] suffixes = {"Centauri", "Draconis", "Cygni", "Eridani", "Andromedae", "Pegasi", "Orionis"};
-        return prefixes[random.nextInt(prefixes.length)] + " " + suffixes[random.nextInt(suffixes.length)];
+    private List<StarSystem> generateSystems() {
+        List<StarSystem> systems = new ArrayList<>();
+        String[] names = {"Systeme Sol Prime", "Nebuleuse d'Orion", "Galaxie d'Andromede",
+                "Trou Noir de Cygnus", "Nebuleuse de la Rosette", "Galaxie du Triangle",
+                "Amas de la Vierge", "Quasar 3C 273", "Nebuleuse de l'Aigle",
+                "Galaxie du Cigare"};
+
+        for (int i = 0; i < names.length; i++) {
+            StarSystem system = new StarSystem();
+            system.setName(names[i]);
+            system.setX(100 + random.nextInt(800));
+            system.setY(100 + random.nextInt(1200));
+            system.setDiscovered(i < 3);
+            system.setDangerLevel(random.nextInt(10) + 1);
+            system.setResourceLevel(random.nextInt(10) + 1);
+
+            List<Planet> planets = new ArrayList<>();
+            int planetCount = 2 + random.nextInt(5);
+            for (int j = 0; j < planetCount; j++) {
+                Planet planet = new Planet();
+                planet.setName("Planete " + (j + 1) + " de " + system.getName());
+                planet.setBiome(random.nextBoolean() ? "Terrestre" : "Gazeuse");
+                planet.setDiscovered(i < 3);
+                planet.setImageUrl(null);
+                planets.add(planet);
+            }
+            system.setPlanets(planets);
+            systems.add(system);
+        }
+
+        return systems;
     }
 
-    private void travelToSelected() {
+    private void updateSystemInfo() {
         if (selectedSystem == null) {
-            Toast.makeText(this, "Sélectionne un système", Toast.LENGTH_SHORT).show();
+            systemInfoText.setText("Selectionne un systeme");
+            return;
+        }
+
+        StringBuilder info = new StringBuilder();
+        info.append(selectedSystem.getName()).append("\n");
+        info.append("Danger: ").append(selectedSystem.getDangerLevel()).append("/10\n");
+        info.append("Ressources: ").append(selectedSystem.getResourceLevel()).append("/10\n");
+        info.append("Decouvert: ").append(selectedSystem.isDiscovered() ? "Oui" : "Non").append("\n");
+        info.append("Planetes: ").append(selectedSystem.getPlanets().size());
+
+        systemInfoText.setText(info.toString());
+    }
+
+    private void travelToSystem() {
+        if (selectedSystem == null) {
+            Toast.makeText(this, "Selectionne un systeme d'abord", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!selectedSystem.isDiscovered()) {
-            Toast.makeText(this, "Système non découvert ! Scanne d'abord.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Systeme non decouvert ! Scanne-le d'abord.", Toast.LENGTH_SHORT).show();
             return;
         }
-        Toast.makeText(this, "Voyage vers " + selectedSystem.getName() + "...", Toast.LENGTH_SHORT).show();
+        party.setCurrentSystem(selectedSystem.getName());
+        if (!selectedSystem.getPlanets().isEmpty()) {
+            party.setCurrentPlanet(selectedSystem.getPlanets().get(0).getName());
+        }
+        dataManager.saveParty(party);
+        Toast.makeText(this, "Voyage vers " + selectedSystem.getName() + " !", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     private void scanSystem() {
@@ -111,161 +155,98 @@ public class GalaxyMapActivity extends AppCompatActivity {
         selectedSystem.setDiscovered(true);
         for (Planet p : selectedSystem.getPlanets()) {
             p.setDiscovered(true);
-            p.setImageUrl(ai.generatePlanetImageUrl(p.getName(), p.getBiome()));
+            p.setImageUrl(null);
         }
         mapView.invalidate();
         updateSystemInfo();
-        Toast.makeText(this, "Système scanné !", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Systeme scanne !", Toast.LENGTH_SHORT).show();
     }
 
-    private void updateSystemInfo() {
-        if (selectedSystem == null) return;
-        StringBuilder info = new StringBuilder();
-        info.append("⭐ ").append(selectedSystem.getName()).append("\n");
-        info.append("Type: ").append(selectedSystem.getStarType()).append("\n");
-        info.append("Faction: ").append(selectedSystem.getFaction()).append("\n");
-        info.append("Menace: ").append(selectedSystem.getThreatLevel()).append("/10\n");
-        info.append("Planètes: ").append(selectedSystem.getPlanets().size()).append("\n");
-        for (Planet p : selectedSystem.getPlanets()) {
-            if (p.isDiscovered()) {
-                info.append("  🪐 ").append(p.getName()).append(" (").append(p.getBiome()).append(")\n");
-            } else {
-                info.append("  ❓ Inconnue\n");
-            }
-        }
-        systemInfo.setText(info.toString());
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     class GalaxyMapView extends View {
         private List<StarSystem> systems;
-        private Paint starPaint;
-        private Paint linePaint;
+        private String currentSystemName;
+        private StarSystem selectedSystem;
+        private Paint systemPaint;
+        private Paint discoveredPaint;
+        private Paint undiscoveredPaint;
+        private Paint selectedPaint;
         private Paint textPaint;
-        private Paint fogPaint;
-        private float offsetX = 0, offsetY = 0;
-        private float scale = 1f;
-        private float lastTouchX, lastTouchY;
+        private Paint connectionPaint;
 
-        public GalaxyMapView(Context context, List<StarSystem> systems) {
+        public GalaxyMapView(android.content.Context context) {
             super(context);
-            this.systems = systems;
+            initPaints();
+        }
 
-            starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            linePaint.setColor(Color.parseColor("#00ff88"));
-            linePaint.setStrokeWidth(2f);
-            linePaint.setAlpha(80);
+        public GalaxyMapView(android.content.Context context, android.util.AttributeSet attrs) {
+            super(context, attrs);
+            initPaints();
+        }
+
+        private void initPaints() {
+            systemPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            systemPaint.setColor(Color.WHITE);
+            systemPaint.setStyle(Paint.Style.FILL);
+
+            discoveredPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            discoveredPaint.setColor(Color.GREEN);
+            discoveredPaint.setStyle(Paint.Style.FILL);
+
+            undiscoveredPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            undiscoveredPaint.setColor(Color.GRAY);
+            undiscoveredPaint.setStyle(Paint.Style.FILL);
+
+            selectedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            selectedPaint.setColor(Color.YELLOW);
+            selectedPaint.setStyle(Paint.Style.STROKE);
+            selectedPaint.setStrokeWidth(4);
 
             textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setColor(Color.WHITE);
-            textPaint.setTextSize(24f);
+            textPaint.setTextSize(24);
 
-            fogPaint = new Paint();
-            fogPaint.setColor(Color.parseColor("#0a0a1a"));
-            fogPaint.setAlpha(200);
+            connectionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            connectionPaint.setColor(Color.parseColor("#444444"));
+            connectionPaint.setStrokeWidth(2);
+        }
+
+        public void setSystems(List<StarSystem> systems, String currentSystemName) {
+            this.systems = systems;
+            this.currentSystemName = currentSystemName;
+            invalidate();
+        }
+
+        public void setSelectedSystem(StarSystem system) {
+            this.selectedSystem = system;
+            invalidate();
         }
 
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-            canvas.drawColor(Color.parseColor("#050510"));
+            if (systems == null) return;
 
-            float cx = getWidth() / 2f + offsetX;
-            float cy = getHeight() / 2f + offsetY;
-
-            // Draw connections
-            for (int i = 0; i < systems.size(); i++) {
-                for (int j = i + 1; j < systems.size(); j++) {
-                    StarSystem s1 = systems.get(i);
-                    StarSystem s2 = systems.get(j);
-                    double dist = Math.hypot(s1.getX() - s2.getX(), s1.getY() - s2.getY());
-                    if (dist < 300 && s1.isDiscovered() && s2.isDiscovered()) {
-                        canvas.drawLine(
-                                cx + (float)s1.getX() * scale, cy + (float)s1.getY() * scale,
-                                cx + (float)s2.getX() * scale, cy + (float)s2.getY() * scale,
-                                linePaint);
-                    }
-                }
+            for (int i = 0; i < systems.size() - 1; i++) {
+                StarSystem s1 = systems.get(i);
+                StarSystem s2 = systems.get(i + 1);
+                canvas.drawLine(s1.getX(), s1.getY(), s2.getX(), s2.getY(), connectionPaint);
             }
 
-            // Draw systems
-            for (StarSystem sys : systems) {
-                float x = cx + (float)sys.getX() * scale;
-                float y = cy + (float)sys.getY() * scale;
+            for (StarSystem system : systems) {
+                Paint paint = system.isDiscovered() ? discoveredPaint : undiscoveredPaint;
+                canvas.drawCircle(system.getX(), system.getY(), 15, paint);
 
-                if (!sys.isDiscovered()) {
-                    starPaint.setColor(Color.parseColor("#333333"));
-                    canvas.drawCircle(x, y, 8 * scale, starPaint);
-                    continue;
+                if (system.getName().equals(currentSystemName)) {
+                    canvas.drawCircle(system.getX(), system.getY(), 20, selectedPaint);
                 }
 
-                // Star glow
-                starPaint.setColor(getStarColor(sys.getStarType()));
-                starPaint.setAlpha(60);
-                canvas.drawCircle(x, y, 25 * scale, starPaint);
-                starPaint.setAlpha(255);
-                canvas.drawCircle(x, y, 12 * scale, starPaint);
-
-                // Selection highlight
-                if (sys == selectedSystem) {
-                    starPaint.setColor(Color.WHITE);
-                    starPaint.setStyle(Paint.Style.STROKE);
-                    starPaint.setStrokeWidth(3f);
-                    canvas.drawCircle(x, y, 18 * scale, starPaint);
-                    starPaint.setStyle(Paint.Style.FILL);
-                }
-
-                // Name
-                if (scale > 0.5f) {
-                    canvas.drawText(sys.getName(), x + 20 * scale, y, textPaint);
-                }
+                canvas.drawText(system.getName(), system.getX() - 40, system.getY() - 25, textPaint);
             }
-        }
-
-        private int getStarColor(String type) {
-            switch (type) {
-                case "Red Giant": return Color.parseColor("#ff4444");
-                case "Blue Supergiant": return Color.parseColor("#4488ff");
-                case "White Dwarf": return Color.parseColor("#ffffff");
-                case "Neutron Star": return Color.parseColor("#00ffff");
-                case "Black Hole": return Color.parseColor("#8800ff");
-                default: return Color.parseColor("#ffdd44");
-            }
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            float cx = getWidth() / 2f + offsetX;
-            float cy = getHeight() / 2f + offsetY;
-
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    lastTouchX = event.getX();
-                    lastTouchY = event.getY();
-
-                    // Check system selection
-                    for (StarSystem sys : systems) {
-                        float sx = cx + (float)sys.getX() * scale;
-                        float sy = cy + (float)sys.getY() * scale;
-                        float dist = (float) Math.hypot(event.getX() - sx, event.getY() - sy);
-                        if (dist < 40 * scale) {
-                            selectedSystem = sys;
-                            updateSystemInfo();
-                            invalidate();
-                            return true;
-                        }
-                    }
-                    return true;
-
-                case MotionEvent.ACTION_MOVE:
-                    offsetX += event.getX() - lastTouchX;
-                    offsetY += event.getY() - lastTouchY;
-                    lastTouchX = event.getX();
-                    lastTouchY = event.getY();
-                    invalidate();
-                    return true;
-            }
-            return super.onTouchEvent(event);
         }
     }
 }

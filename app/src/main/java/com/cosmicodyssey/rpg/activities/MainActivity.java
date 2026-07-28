@@ -1,5 +1,4 @@
 package com.cosmicodyssey.rpg.activities;
-import com.cosmicodyssey.rpg.SettingsActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,10 +26,8 @@ public class MainActivity extends AppCompatActivity {
         Button btnBlackMarket = findViewById(R.id.btnBlackMarket);
         Button btnSettings = findViewById(R.id.btnSettings);
 
-        Glide.with(this)
-                .load("https://image.pollinations.ai/prompt/cosmic%20space%20galaxy%20nebula%20epic%20dramatic%20sci-fi?width=1080&height=1920&nologo=true")
-                .placeholder(R.drawable.bg_cosmic)
-                .into(bgImage);
+        // FIX: Image locale au lieu de chargement externe
+        bgImage.setImageResource(R.drawable.bg_cosmic);
 
         DataManager dataManager = new DataManager(this);
 
@@ -57,7 +54,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnSettings.setOnClickListener(v -> {
-            startActivity(new Intent(this, SettingsActivity.class));
+            startActivity(new Intent(this, com.cosmicodyssey.rpg.SettingsActivity.class));
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // FIX: Libère les ressources Glide
+        Glide.with(getApplicationContext()).clear(findViewById(R.id.bgImage));
     }
 }

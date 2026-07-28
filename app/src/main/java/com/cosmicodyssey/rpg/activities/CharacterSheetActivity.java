@@ -14,12 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.cosmicodyssey.rpg.R;
-import com.cosmicodyssey.rpg.ai.GameMasterAI;
 import com.cosmicodyssey.rpg.data.DataManager;
 import com.cosmicodyssey.rpg.models.Character;
 import com.cosmicodyssey.rpg.models.Equipment;
 
-import java.net.URLEncoder;
 import java.util.List;
 
 public class CharacterSheetActivity extends AppCompatActivity {
@@ -34,7 +32,6 @@ public class CharacterSheetActivity extends AppCompatActivity {
 
     private Character character;
     private DataManager dataManager;
-    private GameMasterAI ai;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +39,6 @@ public class CharacterSheetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_character_sheet);
 
         dataManager = new DataManager(this);
-        ai = new GameMasterAI(this);
 
         character = dataManager.loadCharacter();
         if (character == null) {
@@ -101,7 +97,7 @@ public class CharacterSheetActivity extends AppCompatActivity {
         energyBar.setProgress(character.getEnergy());
         energyText.setText(character.getEnergy() + "/" + character.getMaxEnergy());
 
-        creditsText.setText("💰 " + character.getCredits() + " credits");
+        creditsText.setText(" " + character.getCredits() + " credits");
 
         strengthText.setText("FOR: " + character.getStats().getStrength() + " (" + getMod(character.getStats().getStrength()) + ")");
         dexterityText.setText("DEX: " + character.getStats().getDexterity() + " (" + getMod(character.getStats().getDexterity()) + ")");
@@ -116,43 +112,20 @@ public class CharacterSheetActivity extends AppCompatActivity {
     }
 
     private void updateCharacterImage() {
-        if (character.getAvatarUrl() != null && !character.getAvatarUrl().isEmpty()) {
-            Glide.with(this).load(character.getAvatarUrl()).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
-            return;
-        }
-        
-        boolean hasArmor = false;
-        for (Equipment e : character.getEquipments()) {
-            if (e.getType() != null && (e.getType().equalsIgnoreCase("Armure") || e.getType().equalsIgnoreCase("Chest"))) {
-                hasArmor = true;
-                break;
-            }
-        }
-        
-        if (character.getLevel() == 1 && !hasArmor) {
-            String basePrompt = "sci-fi character portrait, " + character.getRace() + " " + character.getClassName() + 
-                    ", " + character.getName() + ", wearing basic underclothes and simple cloth, no armor, no weapons, " +
-                    "space station interior background, digital art, high quality";
-            String encodedPrompt;
-            try {
-                encodedPrompt = URLEncoder.encode(basePrompt, "UTF-8");
-            } catch (Exception e) {
-                encodedPrompt = basePrompt;
-            }
-            String imageUrl = "https://image.pollinations.ai/prompt/" + encodedPrompt + "?width=512&height=512&nologo=true";
-            Glide.with(this).load(imageUrl).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
-            return;
-        }
-        
-        String prompt = character.generateImagePrompt();
-        String encodedPrompt;
         try {
-            encodedPrompt = URLEncoder.encode(prompt, "UTF-8");
+            if (character.getAvatarUrl() != null && !character.getAvatarUrl().isEmpty()) {
+                Glide.with(getApplicationContext())
+                        .load(character.getAvatarUrl())
+                        .placeholder(R.drawable.ic_character_placeholder)
+                        .error(R.drawable.ic_character_placeholder)
+                        .into(avatarImage);
+                return;
+            }
         } catch (Exception e) {
-            encodedPrompt = prompt;
+            avatarImage.setImageResource(R.drawable.ic_character_placeholder);
         }
-        String imageUrl = "https://image.pollinations.ai/prompt/" + encodedPrompt + "?width=512&height=512&nologo=true";
-        Glide.with(this).load(imageUrl).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
+        // Fallback: image locale
+        avatarImage.setImageResource(R.drawable.ic_character_placeholder);
     }
 
     private void updateEquipmentList() {
@@ -168,11 +141,19 @@ public class CharacterSheetActivity extends AppCompatActivity {
         }
         for (Equipment e : equipments) {
             TextView tv = new TextView(this);
-            tv.setText("• " + e.getName() + " (" + e.getType() + ")");
+            tv.setText("* " + e.getName() + " (" + e.getType() + ")");
             tv.setTextColor(Color.parseColor("#FFFFFF"));
             tv.setTextSize(14);
             tv.setPadding(0, 4, 0, 4);
             equipmentList.addView(tv);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (avatarImage != null) {
+            Glide.with(getApplicationContext()).clear(avatarImage);
         }
     }
 

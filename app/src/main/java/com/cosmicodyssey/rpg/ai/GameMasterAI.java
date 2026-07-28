@@ -1,11 +1,9 @@
 package com.cosmicodyssey.rpg.ai;
-import java.net.URLEncoder;
-import java.io.UnsupportedEncodingException;
-import com.cosmicodyssey.rpg.BuildConfig;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.cosmicodyssey.rpg.BuildConfig;
 import com.cosmicodyssey.rpg.models.Character;
 import com.cosmicodyssey.rpg.models.Cargo;
 import com.cosmicodyssey.rpg.models.Equipment;
@@ -14,6 +12,7 @@ import com.cosmicodyssey.rpg.models.Party;
 import com.cosmicodyssey.rpg.models.Planet;
 import com.cosmicodyssey.rpg.models.Rarity;
 import com.cosmicodyssey.rpg.models.Spaceship;
+import com.cosmicodyssey.rpg.utils.ProgressionConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -34,14 +33,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import com.cosmicodyssey.rpg.utils.ProgressionConfig;
 
 public class GameMasterAI {
     private static final String PREFS_NAME = "CosmicOdysseyPrefs";
     private static final String KEY_OPENROUTER_API = "openrouter_api_key";
     private static final String OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-    private static final String POLLINATIONS_IMAGE_URL = "https://image.pollinations.ai/prompt/";
-    
+
     private final Context context;
     private final OkHttpClient client;
     private final Gson gson;
@@ -68,80 +65,83 @@ public class GameMasterAI {
         return apiKey != null && !apiKey.isEmpty();
     }
 
-    public void generateStoryResponse(Party party, Character character, String playerAction, 
-                                       AIResponseCallback callback) {
+    public void generateStoryResponse(Party party, Character character, String playerAction,
+                                     AIResponseCallback callback) {
         if (!hasApiKey()) {
-            callback.onError("Clé API OpenRouter requise. Va dans Paramètres > API Keys.");
+            callback.onError("Cle API OpenRouter requise. Va dans Parametres > API Keys.");
             return;
         }
+        try {
+            String systemPrompt = buildSystemPrompt(party, character);
+            String userPrompt = buildUserPrompt(character, playerAction, party);
 
-        String systemPrompt = buildSystemPrompt(party, character);
-        String userPrompt = buildUserPrompt(character, playerAction, party);
+            JsonObject message = new JsonObject();
+            message.addProperty("role", "user");
+            message.addProperty("content", userPrompt);
 
-        JsonObject message = new JsonObject();
-        message.addProperty("role", "user");
-        message.addProperty("content", userPrompt);
+            JsonObject systemMessage = new JsonObject();
+            systemMessage.addProperty("role", "system");
+            systemMessage.addProperty("content", systemPrompt);
 
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", systemPrompt);
+            JsonArray messages = new JsonArray();
+            messages.add(systemMessage);
 
-        JsonArray messages = new JsonArray();
-        messages.add(systemMessage);
-        
-        for (String hist : party.getStoryHistory()) {
-            JsonObject histMsg = new JsonObject();
-            histMsg.addProperty("role", "assistant");
-            histMsg.addProperty("content", hist);
-            messages.add(histMsg);
+            for (String hist : party.getStoryHistory()) {
+                JsonObject histMsg = new JsonObject();
+                histMsg.addProperty("role", "assistant");
+                histMsg.addProperty("content", hist);
+                messages.add(histMsg);
+            }
+            messages.add(message);
+
+            JsonObject body = new JsonObject();
+            body.addProperty("model", "openrouter/auto");
+            body.add("messages", messages);
+            body.addProperty("temperature", 0.85);
+            body.addProperty("max_tokens", 2000);
+            body.addProperty("stream", false);
+
+            Request request = new Request.Builder()
+                    .url(OPENROUTER_URL)
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("HTTP-Referer", "https://cosmicodyssey.app")
+                    .header("X-Title", "Cosmic Odyssey RPG")
+                    .post(RequestBody.create(body.toString(), MediaType.parse("application/json")))
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    callback.onError("Erreur reseau: " + e.getMessage());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        callback.onError("Erreur API: " + response.code());
+                        return;
+                    }
+                    if (response.body() == null) {
+                        callback.onError("Reponse vide du serveur");
+                        return;
+                    }
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        String content = json.getJSONArray("choices")
+                                .getJSONObject(0)
+                                .getJSONObject("message")
+                                .getString("content");
+
+                        StoryResponse storyResponse = parseStoryResponse(content);
+                        callback.onSuccess(storyResponse);
+                    } catch (JSONException e) {
+                        callback.onError("Erreur parsing: " + e.getMessage());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onError("Erreur: " + e.getMessage());
         }
-        messages.add(message);
-
-        JsonObject body = new JsonObject();
-        body.addProperty("model", "openrouter/auto");
-        body.add("messages", messages);
-        body.addProperty("temperature", 0.85);
-        body.addProperty("max_tokens", 2000);
-        body.addProperty("stream", false);
-
-        Request request = new Request.Builder()
-                .url(OPENROUTER_URL)
-                .header("Authorization", "Bearer " + apiKey)
-                .header("HTTP-Referer", "https://cosmicodyssey.app")
-                .header("X-Title", "Cosmic Odyssey RPG")
-                .post(RequestBody.create(body.toString(), MediaType.parse("application/json")))
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onError("Erreur réseau: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    callback.onError("Erreur API: " + response.code());
-                    return;
-                }
-                if (response.body() == null) {
-                    callback.onError("Réponse vide du serveur");
-                    return;
-                }
-                try {
-                    JSONObject json = new JSONObject(response.body().string());
-                    String content = json.getJSONArray("choices")
-                            .getJSONObject(0)
-                            .getJSONObject("message")
-                            .getString("content");
-                    
-                    StoryResponse storyResponse = parseStoryResponse(content);
-                    callback.onSuccess(storyResponse);
-                } catch (JSONException e) {
-                    callback.onError("Erreur parsing: " + e.getMessage());
-                }
-            }
-        });
     }
 
     private String buildSystemPrompt(Party party, Character character) {
@@ -159,13 +159,14 @@ public class GameMasterAI {
         sb.append("Reponds en francais avec le format JSON demande.");
         return sb.toString();
     }
+
     private String buildUserPrompt(Character character, String action, Party party) {
         StringBuilder sb = new StringBuilder();
         sb.append(character.getCharacterPrompt()).append("\\n");
         sb.append("Action du joueur: ").append(action).append("\\n");
-        sb.append("Contexte: Planète actuelle ").append(party.getCurrentPlanet())
-          .append(", Système ").append(party.getCurrentSystem()).append("\\n");
-        sb.append("Réponds en français avec le format JSON demandé.");
+        sb.append("Contexte: Planete actuelle ").append(party.getCurrentPlanet())
+                .append(", Systeme ").append(party.getCurrentSystem()).append("\\n");
+        sb.append("Reponds en francais avec le format JSON demande.");
         return sb.toString();
     }
 
@@ -176,7 +177,6 @@ public class GameMasterAI {
             return response;
         }
         String cleanContent = content.trim();
-        // Nettoyer les balises markdown
         if (cleanContent.startsWith("```json")) {
             int start = cleanContent.indexOf("{");
             int end = cleanContent.lastIndexOf("}");
@@ -186,19 +186,15 @@ public class GameMasterAI {
         } else if (cleanContent.startsWith("```")) {
             cleanContent = cleanContent.replaceAll("```[a-zA-Z]*", "").replaceAll("```", "").trim();
         }
-        // Essayer de parser le JSON
-        // Removed invalid response check
-                try {
+        try {
             JSONObject json = new JSONObject(cleanContent);
             response.narration = json.optString("narration", "").trim();
             if (response.narration.isEmpty()) {
                 response.narration = cleanContent;
             } else {
-                // Si narration contient encore du JSON imbrique
                 String innerNarration = response.narration;
                 if (innerNarration.startsWith("{") && innerNarration.endsWith("}")) {
-        // Removed invalid response check
-                try {
+                    try {
                         JSONObject inner = new JSONObject(innerNarration);
                         String deepNarration = inner.optString("narration", "").trim();
                         if (!deepNarration.isEmpty()) response.narration = deepNarration;
@@ -231,7 +227,6 @@ public class GameMasterAI {
                 }
             }
         } catch (Exception e) {
-            // Si le parsing echoue, utiliser le texte brut nettoye
             response.narration = cleanContent;
             response.voiceText = cleanContent.length() > 300 ? cleanContent.substring(0, 300) : cleanContent;
         }
@@ -244,8 +239,7 @@ public class GameMasterAI {
         eq.setDescription(json.optString("description", ""));
         eq.setType(json.optString("type", "Arme"));
         String rarityStr = json.optString("rarity", "COMMON");
-        // Removed invalid response check
-                try {
+        try {
             eq.setRarity(Rarity.valueOf(rarityStr.toUpperCase()));
         } catch (Exception e) {
             eq.setRarity(Rarity.COMMON);
@@ -253,84 +247,60 @@ public class GameMasterAI {
         eq.setDamage(json.optInt("damage", 0));
         eq.setDefense(json.optInt("defense", 0));
         eq.setLore(json.optString("lore", ""));
-        eq.setImageUrl(generateItemImageUrl(eq.getName(), eq.getType(), eq.getRarity()));
+        eq.setImageUrl(null);
         return eq;
     }
 
     private Planet parsePlanetFromJson(JSONObject json) throws JSONException {
         Planet planet = new Planet();
-        planet.setName(json.optString("name", "Planète inconnue"));
+        planet.setName(json.optString("name", "Planete inconnue"));
         planet.setBiome(json.optString("biome", "Inconnu"));
         planet.setDescription(json.optString("description", ""));
         planet.setDangerLevel(json.optInt("dangerLevel", 1));
         planet.setResourceLevel(json.optInt("resourceLevel", 1));
-        planet.setImageUrl(generatePlanetImageUrl(planet.getName(), planet.getBiome()));
+        planet.setImageUrl(null);
         return planet;
     }
 
+    // FIX: Toutes les methodes de generation d'image retournent null (pas d'image externe)
     public String generateCharacterImageUrl(Character character) {
-        String prompt = "fantasy sci-fi character portrait, " + character.getRace() + 
-                " " + character.getClassName() + ", " + character.getName() + 
-                ", detailed armor and weapons, cosmic background, " +
-                "digital art, high quality, 4k, dramatic lighting";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=512&height=512&nologo=true&seed=" + character.getId().hashCode();
+        return null;
     }
 
     public String generateItemImageUrl(String itemName, String itemType, Rarity rarity) {
-        String prompt = "sci-fi " + itemType + " " + itemName + ", " + rarity.getLabel() + 
-                " rarity, glowing effects, detailed, cosmic style, game item, transparent background";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=256&height=256&nologo=true";
+        return null;
     }
 
     public String generateMountImageUrl(Mount mount) {
-        String prompt = "sci-fi alien creature mount, " + mount.getSpecies() + 
-                " " + mount.getName() + ", " + mount.getRarity().getLabel() + 
-                ", detailed, cosmic environment, fantasy art";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=512&height=512&nologo=true";
+        return null;
     }
 
     public String generateSpaceshipImageUrl(Spaceship ship) {
-        String prompt = "sci-fi spaceship, " + ship.getModel() + " " + ship.getName() + 
-                ", " + ship.getRarity().getLabel() + ", detailed, space background, " +
-                "dramatic lighting, concept art";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=512&height=512&nologo=true";
+        return null;
     }
 
     public String generateCargoImageUrl(Cargo cargo) {
-        String prompt = "sci-fi cargo container, " + cargo.getName() + 
-                ", " + cargo.getRarity().getLabel() + ", industrial design, space station";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=512&height=512&nologo=true";
+        return null;
     }
 
     public String generatePlanetImageUrl(String planetName, String biome) {
-        String prompt = "alien planet, " + biome + " biome, " + planetName + 
-                ", view from space, detailed atmosphere, sci-fi art, cosmic";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=512&height=512&nologo=true";
+        return null;
     }
 
     public String generateSceneImageUrl(String sceneDescription) {
-        String prompt = "sci-fi scene, " + sceneDescription + ", cinematic, dramatic, detailed, cosmic";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=1024&height=576&nologo=true";
+        return null;
     }
 
     public String generateMerchantImageUrl(String merchantType, String merchantName) {
-        String prompt = "sci-fi alien merchant, " + merchantType + " vendor, " + merchantName + 
-                ", detailed character, space bazaar, colorful, fantasy art";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=256&height=256&nologo=true";
+        return null;
     }
 
     public String generateGalaxyMapImageUrl(String sectorName) {
-        String prompt = "galaxy map, star chart, " + sectorName + 
-                ", sci-fi holographic display, detailed, cosmic, blue and purple tones";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=1024&height=1024&nologo=true";
+        return null;
     }
 
-    private String encodePrompt(String prompt) {
-        try {
-            return java.net.URLEncoder.encode(prompt, "UTF-8");
-        } catch (java.io.UnsupportedEncodingException e) {
-            return prompt;
-        }
+    public String generateMessageImageUrl(String messageText) {
+        return null;
     }
 
     public interface AIResponseCallback {
@@ -346,7 +316,7 @@ public class GameMasterAI {
         public List<Equipment> newItems = new ArrayList<>();
         public List<Planet> newPlanets = new ArrayList<>();
         public List<DiceCheck> diceChecks = new ArrayList<>();
-        public List<com.cosmicodyssey.rpg.models.Companion> newCompanions = new ArrayList<>();
+        public List<Object> newCompanions = new ArrayList<>();
     }
 
     public static class DiceCheck {
@@ -357,10 +327,5 @@ public class GameMasterAI {
         public String failText;
         public int statModifier;
         public String diceType;
-    }
-
-    public String generateMessageImageUrl(String messageText) {
-        String prompt = "sci-fi RPG scene, " + messageText.substring(0, Math.min(messageText.length(), 200)) + ", cinematic, detailed, cosmic, dramatic lighting";
-        return POLLINATIONS_IMAGE_URL + encodePrompt(prompt) + "?width=1024&height=576&nologo=true";
     }
 }

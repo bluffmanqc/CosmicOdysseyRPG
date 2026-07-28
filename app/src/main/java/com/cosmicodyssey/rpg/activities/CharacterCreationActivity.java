@@ -21,9 +21,7 @@ import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.cosmicodyssey.rpg.R;
-import com.cosmicodyssey.rpg.ai.GameMasterAI;
 import com.cosmicodyssey.rpg.data.DataManager;
-import com.cosmicodyssey.rpg.utils.ImageUtils;
 import com.cosmicodyssey.rpg.models.Character;
 import com.cosmicodyssey.rpg.models.CharacterStats;
 
@@ -60,13 +58,9 @@ public class CharacterCreationActivity extends AppCompatActivity {
     private Button uploadAvatarBtn;
     private Button takePhotoBtn;
     private RadioGroup avatarTypeGroup;
-    private RadioButton aiAvatarRadio;
-    private RadioButton customAvatarRadio;
 
     private Character character;
-    private GameMasterAI ai;
     private String customAvatarPath;
-    private String aiAvatarUrl;
     private boolean isCustomAvatar = false;
 
     private int[] baseStats = new int[7];
@@ -81,7 +75,6 @@ public class CharacterCreationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_character_creation);
 
         character = new Character();
-        ai = new GameMasterAI(this);
 
         avatarImage = findViewById(R.id.avatarImage);
         nameInput = findViewById(R.id.nameInput);
@@ -118,9 +111,9 @@ public class CharacterCreationActivity extends AppCompatActivity {
     }
 
     private void setupSpinners() {
-        String[] races = {"Humain", "Xylarien", "Néo-Machine", "Vorak", "Etherean", "Draconien"};
-        String[] classes = {"Pilote", "Psionique", "Ingénieur", "Mercenaire", "Explorateur", "Marchand"};
-        String[] backgrounds = {"Vétéran de guerre", "Scientifique", "Criminel", "Noble", "Réfugié", "Archéologue"};
+        String[] races = {"Humain", "Xylarien", "Neo-Machine", "Vorak", "Etherean", "Draconien"};
+        String[] classes = {"Pilote", "Psionique", "Ingenieur", "Mercenaire", "Explorateur", "Marchand"};
+        String[] backgrounds = {"Veteran de guerre", "Scientifique", "Criminel", "Noble", "Refugie", "Archeologue"};
 
         raceSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, races));
         classSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, classes));
@@ -156,21 +149,21 @@ public class CharacterCreationActivity extends AppCompatActivity {
                     int base = baseStats[idx];
                     int currentAllocated = progress - base;
                     if (currentAllocated < 0) currentAllocated = 0;
-                    
+
                     int otherAllocated = 0;
                     for (int j = 0; j < 7; j++) {
                         if (j != idx) otherAllocated += allocatedPoints[j];
                     }
-                    
+
                     if (currentAllocated + otherAllocated > TOTAL_POINTS) {
                         currentAllocated = TOTAL_POINTS - otherAllocated;
                         if (currentAllocated < 0) currentAllocated = 0;
                     }
-                    
+
                     if (base + currentAllocated > MAX_STAT) {
                         currentAllocated = MAX_STAT - base;
                     }
-                    
+
                     allocatedPoints[idx] = currentAllocated;
                     seekBar.setProgress(base + currentAllocated);
                     updateStatValues();
@@ -200,7 +193,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
         switch (race) {
             case "Humain": break;
             case "Xylarien": newBase[0]=8; newBase[1]=14; newBase[2]=8; newBase[3]=12; newBase[4]=12; newBase[5]=10; newBase[6]=10; break;
-            case "Néo-Machine": newBase[0]=12; newBase[1]=8; newBase[2]=14; newBase[3]=12; newBase[4]=8; newBase[5]=6; newBase[6]=8; break;
+            case "Neo-Machine": newBase[0]=12; newBase[1]=8; newBase[2]=14; newBase[3]=12; newBase[4]=8; newBase[5]=6; newBase[6]=8; break;
             case "Vorak": newBase[0]=16; newBase[1]=6; newBase[2]=14; newBase[3]=6; newBase[4]=8; newBase[5]=6; newBase[6]=12; break;
             case "Etherean": newBase[0]=6; newBase[1]=10; newBase[2]=8; newBase[3]=16; newBase[4]=14; newBase[5]=12; newBase[6]=10; break;
             case "Draconien": newBase[0]=14; newBase[1]=8; newBase[2]=12; newBase[3]=10; newBase[4]=10; newBase[5]=12; newBase[6]=8; break;
@@ -209,7 +202,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
         switch (className) {
             case "Pilote": newBase[1]+=2; newBase[4]+=1; break;
             case "Psionique": newBase[3]+=2; newBase[5]+=1; break;
-            case "Ingénieur": newBase[2]+=1; newBase[3]+=2; break;
+            case "Ingenieur": newBase[2]+=1; newBase[3]+=2; break;
             case "Mercenaire": newBase[0]+=2; newBase[2]+=1; break;
             case "Explorateur": newBase[1]+=2; newBase[4]+=1; break;
             case "Marchand": newBase[5]+=2; newBase[6]+=1; break;
@@ -249,7 +242,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
 
     private void setupButtons() {
         createBtn.setOnClickListener(v -> createCharacter());
-        generateAvatarBtn.setOnClickListener(v -> generateAIAvatar());
+        generateAvatarBtn.setOnClickListener(v -> generateDefaultAvatar());
         uploadAvatarBtn.setOnClickListener(v -> pickImageFromGallery());
         takePhotoBtn.setOnClickListener(v -> takePhoto());
     }
@@ -262,20 +255,20 @@ public class CharacterCreationActivity extends AppCompatActivity {
         }
 
         if (pointsRemaining < 0) {
-            Toast.makeText(this, "Trop de points alloués !", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Trop de points alloues !", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (character.getAvatarUrl() == null) {
             new AlertDialog.Builder(this)
-                .setTitle("Pas d'avatar")
-                .setMessage("Générer un avatar IA automatiquement ?")
-                .setPositiveButton("Oui", (dialog, which) -> {
-                    generateAIAvatar();
-                    saveAndContinue(name);
-                })
-                .setNegativeButton("Non", null)
-                .show();
+                    .setTitle("Pas d'avatar")
+                    .setMessage("Utiliser l'avatar par defaut ?")
+                    .setPositiveButton("Oui", (dialog, which) -> {
+                        generateDefaultAvatar();
+                        saveAndContinue(name);
+                    })
+                    .setNegativeButton("Non", null)
+                    .show();
             return;
         }
 
@@ -306,21 +299,17 @@ public class CharacterCreationActivity extends AppCompatActivity {
         finish();
     }
 
-    private void generateAIAvatar() {
+    private void generateDefaultAvatar() {
         character.setName(nameInput.getText().toString().trim());
         character.setRace(raceSpinner.getSelectedItem().toString());
         character.setClassName(classSpinner.getSelectedItem().toString());
 
-        aiAvatarUrl = ai.generateCharacterImageUrl(character);
-        character.setAvatarUrl(aiAvatarUrl);
-        character.setAvatarType("ai");
+        // FIX: Image locale au lieu de generation IA externe
+        character.setAvatarUrl(null);
+        character.setAvatarType("default");
+        avatarImage.setImageResource(R.drawable.ic_character_placeholder);
 
-        Glide.with(this)
-            .load(aiAvatarUrl)
-            .placeholder(R.drawable.ic_character_placeholder)
-            .into(avatarImage);
-
-        Toast.makeText(this, "Avatar IA généré !", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Avatar par defaut applique !", Toast.LENGTH_SHORT).show();
     }
 
     private void pickImageFromGallery() {
@@ -346,12 +335,20 @@ public class CharacterCreationActivity extends AppCompatActivity {
                 customAvatarPath = selectedImage.toString();
                 character.setAvatarUrl(customAvatarPath);
                 character.setAvatarType("custom");
-                Glide.with(this).load(customAvatarPath).into(avatarImage);
+                Glide.with(getApplicationContext()).load(customAvatarPath).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
             } else if (requestCode == TAKE_PHOTO) {
                 character.setAvatarUrl(customAvatarPath);
                 character.setAvatarType("custom");
-                Glide.with(this).load(customAvatarPath).into(avatarImage);
+                Glide.with(getApplicationContext()).load(customAvatarPath).placeholder(R.drawable.ic_character_placeholder).into(avatarImage);
             }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (avatarImage != null) {
+            Glide.with(getApplicationContext()).clear(avatarImage);
         }
     }
 }

@@ -14,6 +14,9 @@ import com.cosmicodyssey.rpg.R;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private Handler handler;
+    private Runnable runnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,10 +31,20 @@ public class SplashActivity extends AppCompatActivity {
         titleText.startAnimation(fadeIn);
         subtitleText.startAnimation(slideUp);
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        handler = new Handler(Looper.getMainLooper());
+        runnable = () -> {
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
-        }, 3000);
+        };
+        handler.postDelayed(runnable, 3000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (handler != null && runnable != null) {
+            handler.removeCallbacks(runnable);
+        }
     }
 }
