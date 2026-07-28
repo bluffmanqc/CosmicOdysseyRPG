@@ -7,7 +7,6 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.cosmicodyssey.rpg.R;
 import com.cosmicodyssey.rpg.data.DataManager;
 
@@ -56,12 +55,5 @@ public class MainActivity extends AppCompatActivity {
         btnSettings.setOnClickListener(v -> {
             startActivity(new Intent(this, com.cosmicodyssey.rpg.SettingsActivity.class));
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // FIX: Libère les ressources Glide
-        Glide.with(getApplicationContext()).clear(findViewById(R.id.bgImage));
     }
 }

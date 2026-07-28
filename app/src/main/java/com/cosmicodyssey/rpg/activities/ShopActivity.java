@@ -60,9 +60,8 @@ public class ShopActivity extends AppCompatActivity {
         merchantName = findViewById(R.id.merchantName);
         merchantType = findViewById(R.id.merchantType);
         merchantImage = findViewById(R.id.merchantImage);
-        playerCredits = findViewById(R.id.playerCredits);
+        playerCredits = findViewById(R.id.creditsText);
         refreshBtn = findViewById(R.id.refreshBtn);
-        backBtn = findViewById(R.id.backBtn);
 
         shopGrid.setLayoutManager(new GridLayoutManager(this, 2));
 
@@ -74,7 +73,7 @@ public class ShopActivity extends AppCompatActivity {
             generateRandomMerchant();
             generateShopItems();
         });
-        backBtn.setOnClickListener(v -> finish());
+        
     }
 
     private void updateCredits() {
@@ -151,7 +150,7 @@ public class ShopActivity extends AppCompatActivity {
             return;
         }
         character.setCredits(character.getCredits() - item.getPrice());
-        character.getEquipments().add(item.getItem());
+        character.getEquipments().add((Equipment) item.getItem());
         dataManager.saveCharacter(character);
         updateCredits();
         Toast.makeText(this, "Achat effectue : " + item.getName(), Toast.LENGTH_SHORT).show();

@@ -52,25 +52,24 @@ public class GalaxyMapActivity extends AppCompatActivity {
         random = new Random();
         systems = generateSystems();
 
-        mapView = findViewById(R.id.mapView);
-        systemInfoText = findViewById(R.id.systemInfoText);
+        mapView = findViewById(R.id.mapContainer);
+        systemInfoText = findViewById(R.id.systemInfo);
         travelBtn = findViewById(R.id.travelBtn);
         scanBtn = findViewById(R.id.scanBtn);
-        backBtn = findViewById(R.id.backBtn);
 
         mapView.setSystems(systems, party.getCurrentSystem());
 
         travelBtn.setOnClickListener(v -> travelToSystem());
         scanBtn.setOnClickListener(v -> scanSystem());
-        backBtn.setOnClickListener(v -> finish());
+        
 
         mapView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 float x = event.getX();
                 float y = event.getY();
                 for (StarSystem system : systems) {
-                    float dx = x - system.getX();
-                    float dy = y - system.getY();
+                    float dx = x - (float)system.getX();
+                    float dy = y - (float)system.getY();
                     if (Math.sqrt(dx * dx + dy * dy) < 30) {
                         selectedSystem = system;
                         updateSystemInfo();
@@ -96,8 +95,8 @@ public class GalaxyMapActivity extends AppCompatActivity {
             system.setX(100 + random.nextInt(800));
             system.setY(100 + random.nextInt(1200));
             system.setDiscovered(i < 3);
-            system.setDangerLevel(random.nextInt(10) + 1);
-            system.setResourceLevel(random.nextInt(10) + 1);
+            system.setThreatLevel(random.nextInt(10) + 1);
+            system.setThreatLevel(random.nextInt(10) + 1);
 
             List<Planet> planets = new ArrayList<>();
             int planetCount = 2 + random.nextInt(5);
@@ -124,8 +123,8 @@ public class GalaxyMapActivity extends AppCompatActivity {
 
         StringBuilder info = new StringBuilder();
         info.append(selectedSystem.getName()).append("\n");
-        info.append("Danger: ").append(selectedSystem.getDangerLevel()).append("/10\n");
-        info.append("Ressources: ").append(selectedSystem.getResourceLevel()).append("/10\n");
+        info.append("Danger: ").append(selectedSystem.getThreatLevel()).append("/10\n");
+        info.append("Ressources: ").append(selectedSystem.getThreatLevel()).append("/10\n");
         info.append("Decouvert: ").append(selectedSystem.isDiscovered() ? "Oui" : "Non").append("\n");
         info.append("Planetes: ").append(selectedSystem.getPlanets().size());
 
@@ -234,18 +233,18 @@ public class GalaxyMapActivity extends AppCompatActivity {
             for (int i = 0; i < systems.size() - 1; i++) {
                 StarSystem s1 = systems.get(i);
                 StarSystem s2 = systems.get(i + 1);
-                canvas.drawLine(s1.getX(), s1.getY(), s2.getX(), s2.getY(), connectionPaint);
+                canvas.drawLine((float)s1.getX(), (float)s1.getY(), (float)s2.getX(), (float)s2.getY(), connectionPaint);
             }
 
             for (StarSystem system : systems) {
                 Paint paint = system.isDiscovered() ? discoveredPaint : undiscoveredPaint;
-                canvas.drawCircle(system.getX(), system.getY(), 15, paint);
+                canvas.drawCircle((float)system.getX(), (float)system.getY(), 15f, paint);
 
                 if (system.getName().equals(currentSystemName)) {
-                    canvas.drawCircle(system.getX(), system.getY(), 20, selectedPaint);
+                    canvas.drawCircle((float)system.getX(), (float)system.getY(), 20f, selectedPaint);
                 }
 
-                canvas.drawText(system.getName(), system.getX() - 40, system.getY() - 25, textPaint);
+                canvas.drawText(system.getName(), (float)system.getX() - 40f, (float)system.getY() - 25f, textPaint);
             }
         }
     }
